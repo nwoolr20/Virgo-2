@@ -11,12 +11,52 @@ A neural field-based conversation memory system that uses SIREN networks to comp
 
 ## Installation
 
+### Quick Install (Recommended)
+
+Use the provided install script:
+
+```bash
+python3 install.py
+```
+
+This script will:
+- Check Python version
+- Install all required dependencies
+- Download NLTK data
+- Download sentence-transformers model (~90MB, requires internet)
+- Verify installation
+
+### Manual Install
+
 ```bash
 pip install torch sentence-transformers faiss-cpu scikit-learn textblob pytest
 python -c "import nltk; nltk.download('brown'); nltk.download('punkt')"
 ```
 
+**Note:** The system requires internet access on first run to download the sentence-transformers model (`all-MiniLM-L6-v2`).
+
 ## Quick Start
+
+### Using the Launch Script (Recommended)
+
+```bash
+# Start interactive chat
+python3 launch_virgo.py chat
+
+# Run demo
+python3 launch_virgo.py demo
+
+# Run evaluation
+python3 launch_virgo.py evaluate
+
+# Run tests
+python3 launch_virgo.py test
+
+# Show help
+python3 launch_virgo.py help
+```
+
+### Using Python Directly
 
 ```python
 from virgo import MemorySystem
@@ -43,6 +83,16 @@ system.save(Path("./my_memory"))
 
 ## Chat Interface
 
+### Using Launch Script
+
+```bash
+python3 launch_virgo.py chat [path]
+```
+
+Optional: Specify a custom memory storage path (default: `./memory_store`)
+
+### Using Python Module
+
 Run the interactive chat interface:
 
 ```bash
@@ -57,6 +107,14 @@ Commands:
 
 ## Testing
 
+### Using Launch Script
+
+```bash
+python3 launch_virgo.py test
+```
+
+### Using pytest directly
+
 Run the test suite:
 
 ```bash
@@ -65,6 +123,14 @@ pytest tests/ -v
 
 ## Evaluation
 
+### Using Launch Script
+
+```bash
+python3 launch_virgo.py evaluate
+```
+
+### Using Python directly
+
 Run comprehensive evaluation:
 
 ```bash
@@ -72,6 +138,14 @@ python scripts/evaluate.py
 ```
 
 ## Demo
+
+### Using Launch Script
+
+```bash
+python3 launch_virgo.py demo
+```
+
+### Using Python directly
 
 Run the demo script:
 
