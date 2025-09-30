@@ -16,7 +16,7 @@ A neural field-based conversation memory system that uses SIREN networks to comp
 Use the provided install script:
 
 ```bash
-./install.sh
+python3 install.py
 ```
 
 This script will:
@@ -41,19 +41,19 @@ python -c "import nltk; nltk.download('brown'); nltk.download('punkt')"
 
 ```bash
 # Start interactive chat
-./launch.sh chat
+python3 launch_virgo.py chat
 
 # Run demo
-./launch.sh demo
+python3 launch_virgo.py demo
 
 # Run evaluation
-./launch.sh evaluate
+python3 launch_virgo.py evaluate
 
 # Run tests
-./launch.sh test
+python3 launch_virgo.py test
 
 # Show help
-./launch.sh help
+python3 launch_virgo.py help
 ```
 
 ### Using Python Directly
@@ -86,7 +86,7 @@ system.save(Path("./my_memory"))
 ### Using Launch Script
 
 ```bash
-./launch.sh chat [path]
+python3 launch_virgo.py chat [path]
 ```
 
 Optional: Specify a custom memory storage path (default: `./memory_store`)
@@ -110,7 +110,7 @@ Commands:
 ### Using Launch Script
 
 ```bash
-./launch.sh test
+python3 launch_virgo.py test
 ```
 
 ### Using pytest directly
@@ -126,7 +126,7 @@ pytest tests/ -v
 ### Using Launch Script
 
 ```bash
-./launch.sh evaluate
+python3 launch_virgo.py evaluate
 ```
 
 ### Using Python directly
@@ -142,7 +142,7 @@ python scripts/evaluate.py
 ### Using Launch Script
 
 ```bash
-./launch.sh demo
+python3 launch_virgo.py demo
 ```
 
 ### Using Python directly
