@@ -1,7 +1,7 @@
 # V2 System Test
 
-**Test Date:** 2025-10-01 01:49:05
-**Test Duration:** 63.66 seconds
+**Test Date:** 2025-10-01 01:51:50
+**Test Duration:** 63.26 seconds
 
 This document contains the complete results of the Virgo-2 system test,
 following the steps outlined in the QUICKSTART guide.
@@ -88,7 +88,7 @@ Requirement already satisfied: mpmath<1.4,>=1.1.0 in /home/runner/.local/lib/pyt
 
 ```
 
-**Elapsed Time:** 0.68 seconds
+**Elapsed Time:** 0.66 seconds
 **Exit Code:** 0
 ✓ Install Python dependencies - SUCCESS
 **Status:** ✓ SUCCESS
@@ -171,7 +171,7 @@ pip._vendor.pyproject_hooks._impl.BackendUnavailable: Cannot import 'setuptools.
 
 ```
 
-**Elapsed Time:** 1.48 seconds
+**Elapsed Time:** 1.46 seconds
 **Exit Code:** 2
 ✗ Install package in editable mode - FAILED (exit code 2)
 **Status:** ✗ FAILED
@@ -189,7 +189,7 @@ Running: Download NLTK data
 
 ```
 
-**Elapsed Time:** 0.94 seconds
+**Elapsed Time:** 0.92 seconds
 **Exit Code:** 0
 ✓ Download NLTK data - SUCCESS
 **Status:** ✓ SUCCESS
@@ -203,7 +203,7 @@ Running: Download sentence-transformers model
 
 ```
 
-**Elapsed Time:** 4.71 seconds
+**Elapsed Time:** 4.80 seconds
 **Exit Code:** 0
 ✓ Download sentence-transformers model - SUCCESS
 **Status:** ✓ SUCCESS
@@ -249,7 +249,7 @@ ______________________________ test_field_overfit ______________________________
         metrics = field.fit_memory(coord, target, num_steps=1000, lr=1e-3, verbose=False)
     
 >       assert metrics["losses"][-1] < 0.01
-E       assert 0.036005377769470215 < 0.01
+E       assert 0.02758469618856907 < 0.01
 
 tests/test_field.py:26: AssertionError
 =============================== warnings summary ===============================
@@ -264,12 +264,12 @@ tests/test_field.py:26: AssertionError
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== short test summary info ============================
-FAILED tests/test_field.py::test_field_overfit - assert 0.036005377769470215 < 0.01
+FAILED tests/test_field.py::test_field_overfit - assert 0.02758469618856907 < 0.01
 ================== 1 failed, 11 passed, 3 warnings in 14.39s ===================
 
 ```
 
-**Elapsed Time:** 15.85 seconds
+**Elapsed Time:** 15.86 seconds
 **Exit Code:** 1
 ✗ Run test suite - FAILED (exit code 1)
 **Status:** ✗ FAILED
@@ -341,7 +341,7 @@ Demo Complete!
 
 ```
 
-**Elapsed Time:** 6.34 seconds
+**Elapsed Time:** 6.27 seconds
 **Exit Code:** 0
 ✓ Run demo script - SUCCESS
 **Status:** ✓ SUCCESS
@@ -363,19 +363,19 @@ NEURAL FIELD SYSTEM EVALUATION
 COMPRESSION EVALUATION
 ============================================================
 Training field on 300 memories...
-Step 0/3000, Loss: 0.004888
-Step 500/3000, Loss: 0.000001
+Step 0/3000, Loss: 0.004775
+Step 500/3000, Loss: 0.000000
 Step 1000/3000, Loss: 0.000000
 Step 1500/3000, Loss: 0.000000
 Step 2000/3000, Loss: 0.000000
 Step 2500/3000, Loss: 0.000000
-Final loss: 0.000000
+Final loss: 0.000001
 
 === Storage Comparison ===
 Memories stored: 300
 Raw JSON: 16,300 bytes
 Gzipped JSON: 275 bytes
-Neural Field: 3,992,251 bytes
+Neural Field: 3,992,257 bytes
 
 Compression ratio (vs JSON): 0.00x
 Compression ratio (vs gzip): 0.00x
@@ -431,7 +431,7 @@ SUCCESS CRITERIA
 
 ```
 
-**Elapsed Time:** 26.03 seconds
+**Elapsed Time:** 25.88 seconds
 **Exit Code:** 0
 ✓ Run evaluation script - SUCCESS
 **Status:** ✓ SUCCESS
@@ -444,7 +444,7 @@ Running: Automated chat interface test
 
 **Output:**
 ```
-Using temporary memory store: /tmp/tmp1_jayb61
+Using temporary memory store: /tmp/tmpoalencvf
 
 === Initializing Memory System ===
 
@@ -483,7 +483,7 @@ Results:
   has_pca: True
 
 === Saving System ===
-✓ System saved to /tmp/tmp1_jayb61
+✓ System saved to /tmp/tmpoalencvf
 
 === Loading System ===
 ✓ System loaded successfully
@@ -498,7 +498,7 @@ Field fitted: True
 
 ```
 
-**Elapsed Time:** 6.85 seconds
+**Elapsed Time:** 6.63 seconds
 **Exit Code:** 0
 ✓ Automated chat interface test - SUCCESS
 **Status:** ✓ SUCCESS
@@ -526,7 +526,7 @@ Field fitted: True
 **✗ SOME TESTS FAILED (2/6)**
 
 ✗ SOME TESTS FAILED (2/6)
-**Total Test Duration:** 63.66 seconds
+**Total Test Duration:** 63.26 seconds
 
 
 ## Saving Results
