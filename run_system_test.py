@@ -49,9 +49,6 @@ class SystemTestRunner:
         
         try:
             start_time = time.time()
-            # Set up environment with PYTHONPATH
-            env = os.environ.copy()
-            env['PYTHONPATH'] = "/home/runner/work/Virgo-2/Virgo-2:" + env.get('PYTHONPATH', '')
             
             result = subprocess.run(
                 command,
@@ -59,8 +56,7 @@ class SystemTestRunner:
                 capture_output=capture_output,
                 text=True,
                 timeout=timeout,
-                cwd="/home/runner/work/Virgo-2/Virgo-2",
-                env=env
+                cwd="/home/runner/work/Virgo-2/Virgo-2"
             )
             elapsed_time = time.time() - start_time
             

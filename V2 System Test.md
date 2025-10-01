@@ -1,7 +1,7 @@
 # V2 System Test
 
-**Test Date:** 2025-10-01 01:51:50
-**Test Duration:** 63.26 seconds
+**Test Date:** 2025-10-01 02:25:41
+**Test Duration:** 78.45 seconds
 
 This document contains the complete results of the Virgo-2 system test,
 following the steps outlined in the QUICKSTART guide.
@@ -24,7 +24,7 @@ Requirement already satisfied: wheel in /home/runner/.local/lib/python3.12/site-
 
 ```
 
-**Elapsed Time:** 0.78 seconds
+**Elapsed Time:** 0.76 seconds
 **Exit Code:** 0
 ✓ Upgrade pip, setuptools, and wheel - SUCCESS
 **Status:** ✓ SUCCESS
@@ -88,7 +88,7 @@ Requirement already satisfied: mpmath<1.4,>=1.1.0 in /home/runner/.local/lib/pyt
 
 ```
 
-**Elapsed Time:** 0.66 seconds
+**Elapsed Time:** 0.65 seconds
 **Exit Code:** 0
 ✓ Install Python dependencies - SUCCESS
 **Status:** ✓ SUCCESS
@@ -100,83 +100,74 @@ Running: Install package in editable mode
 ```
 Defaulting to user installation because normal site-packages is not writeable
 Obtaining file:///home/runner/work/Virgo-2/Virgo-2
-  Installing build dependencies: started
-  Installing build dependencies: finished with status 'done'
-  Checking if build backend supports build_editable: started
-  Checking if build backend supports build_editable: finished with status 'done'
+  Preparing metadata (setup.py): started
+  Preparing metadata (setup.py): finished with status 'done'
+Requirement already satisfied: torch>=2.0.0 in /home/runner/.local/lib/python3.12/site-packages (from virgo-nf==0.1.0) (2.8.0)
+Requirement already satisfied: numpy>=1.24.0 in /home/runner/.local/lib/python3.12/site-packages (from virgo-nf==0.1.0) (2.3.3)
+Requirement already satisfied: sentence-transformers>=2.2.0 in /home/runner/.local/lib/python3.12/site-packages (from virgo-nf==0.1.0) (5.1.1)
+Requirement already satisfied: faiss-cpu>=1.7.4 in /home/runner/.local/lib/python3.12/site-packages (from virgo-nf==0.1.0) (1.12.0)
+Requirement already satisfied: scikit-learn>=1.3.0 in /home/runner/.local/lib/python3.12/site-packages (from virgo-nf==0.1.0) (1.7.2)
+Requirement already satisfied: textblob>=0.17.0 in /home/runner/.local/lib/python3.12/site-packages (from virgo-nf==0.1.0) (0.19.0)
+Requirement already satisfied: tqdm>=4.65.0 in /home/runner/.local/lib/python3.12/site-packages (from virgo-nf==0.1.0) (4.67.1)
+Requirement already satisfied: packaging in /usr/lib/python3/dist-packages (from faiss-cpu>=1.7.4->virgo-nf==0.1.0) (24.0)
+Requirement already satisfied: scipy>=1.8.0 in /home/runner/.local/lib/python3.12/site-packages (from scikit-learn>=1.3.0->virgo-nf==0.1.0) (1.16.2)
+Requirement already satisfied: joblib>=1.2.0 in /home/runner/.local/lib/python3.12/site-packages (from scikit-learn>=1.3.0->virgo-nf==0.1.0) (1.5.2)
+Requirement already satisfied: threadpoolctl>=3.1.0 in /home/runner/.local/lib/python3.12/site-packages (from scikit-learn>=1.3.0->virgo-nf==0.1.0) (3.6.0)
+Requirement already satisfied: transformers<5.0.0,>=4.41.0 in /home/runner/.local/lib/python3.12/site-packages (from sentence-transformers>=2.2.0->virgo-nf==0.1.0) (4.56.2)
+Requirement already satisfied: huggingface-hub>=0.20.0 in /home/runner/.local/lib/python3.12/site-packages (from sentence-transformers>=2.2.0->virgo-nf==0.1.0) (0.35.3)
+Requirement already satisfied: Pillow in /home/runner/.local/lib/python3.12/site-packages (from sentence-transformers>=2.2.0->virgo-nf==0.1.0) (11.3.0)
+Requirement already satisfied: typing_extensions>=4.5.0 in /usr/lib/python3/dist-packages (from sentence-transformers>=2.2.0->virgo-nf==0.1.0) (4.10.0)
+Requirement already satisfied: filelock in /home/runner/.local/lib/python3.12/site-packages (from transformers<5.0.0,>=4.41.0->sentence-transformers>=2.2.0->virgo-nf==0.1.0) (3.19.1)
+Requirement already satisfied: pyyaml>=5.1 in /usr/lib/python3/dist-packages (from transformers<5.0.0,>=4.41.0->sentence-transformers>=2.2.0->virgo-nf==0.1.0) (6.0.1)
+Requirement already satisfied: regex!=2019.12.17 in /home/runner/.local/lib/python3.12/site-packages (from transformers<5.0.0,>=4.41.0->sentence-transformers>=2.2.0->virgo-nf==0.1.0) (2025.9.18)
+Requirement already satisfied: requests in /usr/lib/python3/dist-packages (from transformers<5.0.0,>=4.41.0->sentence-transformers>=2.2.0->virgo-nf==0.1.0) (2.31.0)
+Requirement already satisfied: tokenizers<=0.23.0,>=0.22.0 in /home/runner/.local/lib/python3.12/site-packages (from transformers<5.0.0,>=4.41.0->sentence-transformers>=2.2.0->virgo-nf==0.1.0) (0.22.1)
+Requirement already satisfied: safetensors>=0.4.3 in /home/runner/.local/lib/python3.12/site-packages (from transformers<5.0.0,>=4.41.0->sentence-transformers>=2.2.0->virgo-nf==0.1.0) (0.6.2)
+Requirement already satisfied: fsspec>=2023.5.0 in /home/runner/.local/lib/python3.12/site-packages (from huggingface-hub>=0.20.0->sentence-transformers>=2.2.0->virgo-nf==0.1.0) (2025.9.0)
+Requirement already satisfied: hf-xet<2.0.0,>=1.1.3 in /home/runner/.local/lib/python3.12/site-packages (from huggingface-hub>=0.20.0->sentence-transformers>=2.2.0->virgo-nf==0.1.0) (1.1.10)
+Requirement already satisfied: nltk>=3.9 in /home/runner/.local/lib/python3.12/site-packages (from textblob>=0.17.0->virgo-nf==0.1.0) (3.9.1)
+Requirement already satisfied: click in /usr/lib/python3/dist-packages (from nltk>=3.9->textblob>=0.17.0->virgo-nf==0.1.0) (8.1.6)
+Requirement already satisfied: setuptools in /home/runner/.local/lib/python3.12/site-packages (from torch>=2.0.0->virgo-nf==0.1.0) (80.9.0)
+Requirement already satisfied: sympy>=1.13.3 in /home/runner/.local/lib/python3.12/site-packages (from torch>=2.0.0->virgo-nf==0.1.0) (1.14.0)
+Requirement already satisfied: networkx in /home/runner/.local/lib/python3.12/site-packages (from torch>=2.0.0->virgo-nf==0.1.0) (3.5)
+Requirement already satisfied: jinja2 in /usr/lib/python3/dist-packages (from torch>=2.0.0->virgo-nf==0.1.0) (3.1.2)
+Requirement already satisfied: nvidia-cuda-nvrtc-cu12==12.8.93 in /home/runner/.local/lib/python3.12/site-packages (from torch>=2.0.0->virgo-nf==0.1.0) (12.8.93)
+Requirement already satisfied: nvidia-cuda-runtime-cu12==12.8.90 in /home/runner/.local/lib/python3.12/site-packages (from torch>=2.0.0->virgo-nf==0.1.0) (12.8.90)
+Requirement already satisfied: nvidia-cuda-cupti-cu12==12.8.90 in /home/runner/.local/lib/python3.12/site-packages (from torch>=2.0.0->virgo-nf==0.1.0) (12.8.90)
+Requirement already satisfied: nvidia-cudnn-cu12==9.10.2.21 in /home/runner/.local/lib/python3.12/site-packages (from torch>=2.0.0->virgo-nf==0.1.0) (9.10.2.21)
+Requirement already satisfied: nvidia-cublas-cu12==12.8.4.1 in /home/runner/.local/lib/python3.12/site-packages (from torch>=2.0.0->virgo-nf==0.1.0) (12.8.4.1)
+Requirement already satisfied: nvidia-cufft-cu12==11.3.3.83 in /home/runner/.local/lib/python3.12/site-packages (from torch>=2.0.0->virgo-nf==0.1.0) (11.3.3.83)
+Requirement already satisfied: nvidia-curand-cu12==10.3.9.90 in /home/runner/.local/lib/python3.12/site-packages (from torch>=2.0.0->virgo-nf==0.1.0) (10.3.9.90)
+Requirement already satisfied: nvidia-cusolver-cu12==11.7.3.90 in /home/runner/.local/lib/python3.12/site-packages (from torch>=2.0.0->virgo-nf==0.1.0) (11.7.3.90)
+Requirement already satisfied: nvidia-cusparse-cu12==12.5.8.93 in /home/runner/.local/lib/python3.12/site-packages (from torch>=2.0.0->virgo-nf==0.1.0) (12.5.8.93)
+Requirement already satisfied: nvidia-cusparselt-cu12==0.7.1 in /home/runner/.local/lib/python3.12/site-packages (from torch>=2.0.0->virgo-nf==0.1.0) (0.7.1)
+Requirement already satisfied: nvidia-nccl-cu12==2.27.3 in /home/runner/.local/lib/python3.12/site-packages (from torch>=2.0.0->virgo-nf==0.1.0) (2.27.3)
+Requirement already satisfied: nvidia-nvtx-cu12==12.8.90 in /home/runner/.local/lib/python3.12/site-packages (from torch>=2.0.0->virgo-nf==0.1.0) (12.8.90)
+Requirement already satisfied: nvidia-nvjitlink-cu12==12.8.93 in /home/runner/.local/lib/python3.12/site-packages (from torch>=2.0.0->virgo-nf==0.1.0) (12.8.93)
+Requirement already satisfied: nvidia-cufile-cu12==1.13.1.3 in /home/runner/.local/lib/python3.12/site-packages (from torch>=2.0.0->virgo-nf==0.1.0) (1.13.1.3)
+Requirement already satisfied: triton==3.4.0 in /home/runner/.local/lib/python3.12/site-packages (from torch>=2.0.0->virgo-nf==0.1.0) (3.4.0)
+Requirement already satisfied: mpmath<1.4,>=1.1.0 in /home/runner/.local/lib/python3.12/site-packages (from sympy>=1.13.3->torch>=2.0.0->virgo-nf==0.1.0) (1.3.0)
+Installing collected packages: virgo-nf
+  Attempting uninstall: virgo-nf
+    Found existing installation: virgo-nf 0.1.0
+    Uninstalling virgo-nf-0.1.0:
+      Successfully uninstalled virgo-nf-0.1.0
+  Running setup.py develop for virgo-nf
+Successfully installed virgo-nf-0.1.0
 
 ```
 
 **Errors/Warnings:**
 ```
-ERROR: Exception:
-Traceback (most recent call last):
-  File "/home/runner/.local/lib/python3.12/site-packages/pip/_internal/cli/base_command.py", line 107, in _run_wrapper
-    status = _inner_run()
-             ^^^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.12/site-packages/pip/_internal/cli/base_command.py", line 98, in _inner_run
-    return self.run(options, args)
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.12/site-packages/pip/_internal/cli/req_command.py", line 71, in wrapper
-    return func(self, options, args)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.12/site-packages/pip/_internal/commands/install.py", line 393, in run
-    requirement_set = resolver.resolve(
-                      ^^^^^^^^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.12/site-packages/pip/_internal/resolution/resolvelib/resolver.py", line 79, in resolve
-    collected = self.factory.collect_root_requirements(root_reqs)
-                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.12/site-packages/pip/_internal/resolution/resolvelib/factory.py", line 538, in collect_root_requirements
-    reqs = list(
-           ^^^^^
-  File "/home/runner/.local/lib/python3.12/site-packages/pip/_internal/resolution/resolvelib/factory.py", line 494, in _make_requirements_from_install_req
-    cand = self._make_base_candidate_from_link(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.12/site-packages/pip/_internal/resolution/resolvelib/factory.py", line 205, in _make_base_candidate_from_link
-    self._editable_candidate_cache[link] = EditableCandidate(
-                                           ^^^^^^^^^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.12/site-packages/pip/_internal/resolution/resolvelib/candidates.py", line 334, in __init__
-    super().__init__(
-  File "/home/runner/.local/lib/python3.12/site-packages/pip/_internal/resolution/resolvelib/candidates.py", line 162, in __init__
-    self.dist = self._prepare()
-                ^^^^^^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.12/site-packages/pip/_internal/resolution/resolvelib/candidates.py", line 239, in _prepare
-    dist = self._prepare_distribution()
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.12/site-packages/pip/_internal/resolution/resolvelib/candidates.py", line 344, in _prepare_distribution
-    return self._factory.preparer.prepare_editable_requirement(self._ireq)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.12/site-packages/pip/_internal/operations/prepare.py", line 708, in prepare_editable_requirement
-    dist = _get_prepared_distribution(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.12/site-packages/pip/_internal/operations/prepare.py", line 77, in _get_prepared_distribution
-    abstract_dist.prepare_distribution_metadata(
-  File "/home/runner/.local/lib/python3.12/site-packages/pip/_internal/distributions/sdist.py", line 57, in prepare_distribution_metadata
-    self.req.isolated_editable_sanity_check()
-  File "/home/runner/.local/lib/python3.12/site-packages/pip/_internal/req/req_install.py", line 544, in isolated_editable_sanity_check
-    and not self.supports_pyproject_editable
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/functools.py", line 995, in __get__
-    val = self.func(instance)
-          ^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.12/site-packages/pip/_internal/req/req_install.py", line 261, in supports_pyproject_editable
-    return "build_editable" in self.pep517_backend._supported_features()
-                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.12/site-packages/pip/_vendor/pyproject_hooks/_impl.py", line 180, in _supported_features
-    return self._call_hook("_supported_features", {})
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.12/site-packages/pip/_vendor/pyproject_hooks/_impl.py", line 402, in _call_hook
-    raise BackendUnavailable(
-pip._vendor.pyproject_hooks._impl.BackendUnavailable: Cannot import 'setuptools.build_backend'
+  DEPRECATION: Legacy editable install of virgo-nf==0.1.0 from file:///home/runner/work/Virgo-2/Virgo-2 (setup.py develop) is deprecated. pip 25.3 will enforce this behaviour change. A possible replacement is to add a pyproject.toml or enable --use-pep517, and use setuptools >= 64. If the resulting installation is not behaving as expected, try using --config-settings editable_mode=compat. Please consult the setuptools documentation for more information. Discussion can be found at https://github.com/pypa/pip/issues/11457
 
 ```
 
-**Elapsed Time:** 1.46 seconds
-**Exit Code:** 2
-✗ Install package in editable mode - FAILED (exit code 2)
-**Status:** ✗ FAILED
+**Elapsed Time:** 3.12 seconds
+**Exit Code:** 0
+✓ Install package in editable mode - SUCCESS
+**Status:** ✓ SUCCESS
 
-Installation failed, continuing anyway...
 
 ## Step 2: Download Required Data
 
@@ -189,7 +180,7 @@ Running: Download NLTK data
 
 ```
 
-**Elapsed Time:** 0.92 seconds
+**Elapsed Time:** 1.38 seconds
 **Exit Code:** 0
 ✓ Download NLTK data - SUCCESS
 **Status:** ✓ SUCCESS
@@ -203,7 +194,7 @@ Running: Download sentence-transformers model
 
 ```
 
-**Elapsed Time:** 4.80 seconds
+**Elapsed Time:** 5.59 seconds
 **Exit Code:** 0
 ✓ Download sentence-transformers model - SUCCESS
 **Status:** ✓ SUCCESS
@@ -220,14 +211,13 @@ Running: Run test suite
 platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0 -- /usr/bin/python3
 cachedir: .pytest_cache
 rootdir: /home/runner/work/Virgo-2/Virgo-2
-configfile: pyproject.toml
 collecting ... collected 12 items
 
 tests/test_coordinates.py::test_coordinate_dimensions PASSED             [  8%]
 tests/test_coordinates.py::test_importance_scoring PASSED                [ 16%]
 tests/test_coordinates.py::test_semantic_consistency PASSED              [ 25%]
 tests/test_field.py::test_field_forward PASSED                           [ 33%]
-tests/test_field.py::test_field_overfit FAILED                           [ 41%]
+tests/test_field.py::test_field_overfit PASSED                           [ 41%]
 tests/test_field.py::test_field_batch PASSED                             [ 50%]
 tests/test_integration.py::test_end_to_end PASSED                        [ 58%]
 tests/test_integration.py::test_persistence_end_to_end PASSED            [ 66%]
@@ -236,22 +226,6 @@ tests/test_memory.py::test_field_training PASSED                         [ 83%]
 tests/test_memory.py::test_persistence PASSED                            [ 91%]
 tests/test_memory.py::test_stats PASSED                                  [100%]
 
-=================================== FAILURES ===================================
-______________________________ test_field_overfit ______________________________
-
-    def test_field_overfit():
-        """Field should memorize single mapping."""
-        field = ConversationField(hidden_dim=128)
-    
-        coord = torch.rand(1, 6)
-        target = torch.rand(1, 384)
-    
-        metrics = field.fit_memory(coord, target, num_steps=1000, lr=1e-3, verbose=False)
-    
->       assert metrics["losses"][-1] < 0.01
-E       assert 0.02758469618856907 < 0.01
-
-tests/test_field.py:26: AssertionError
 =============================== warnings summary ===============================
 <frozen importlib._bootstrap>:488
   <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
@@ -263,16 +237,14 @@ tests/test_field.py:26: AssertionError
   <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-=========================== short test summary info ============================
-FAILED tests/test_field.py::test_field_overfit - assert 0.02758469618856907 < 0.01
-================== 1 failed, 11 passed, 3 warnings in 14.39s ===================
+======================= 12 passed, 3 warnings in 23.27s ========================
 
 ```
 
-**Elapsed Time:** 15.86 seconds
-**Exit Code:** 1
-✗ Run test suite - FAILED (exit code 1)
-**Status:** ✗ FAILED
+**Elapsed Time:** 24.63 seconds
+**Exit Code:** 0
+✓ Run test suite - SUCCESS
+**Status:** ✓ SUCCESS
 
 
 ## Step 4: Run Interactive Demo
@@ -341,7 +313,7 @@ Demo Complete!
 
 ```
 
-**Elapsed Time:** 6.27 seconds
+**Elapsed Time:** 6.85 seconds
 **Exit Code:** 0
 ✓ Run demo script - SUCCESS
 **Status:** ✓ SUCCESS
@@ -363,19 +335,19 @@ NEURAL FIELD SYSTEM EVALUATION
 COMPRESSION EVALUATION
 ============================================================
 Training field on 300 memories...
-Step 0/3000, Loss: 0.004775
+Step 0/3000, Loss: 0.005403
 Step 500/3000, Loss: 0.000000
 Step 1000/3000, Loss: 0.000000
 Step 1500/3000, Loss: 0.000000
-Step 2000/3000, Loss: 0.000000
+Step 2000/3000, Loss: 0.000001
 Step 2500/3000, Loss: 0.000000
-Final loss: 0.000001
+Final loss: 0.000000
 
 === Storage Comparison ===
 Memories stored: 300
 Raw JSON: 16,300 bytes
 Gzipped JSON: 275 bytes
-Neural Field: 3,992,257 bytes
+Neural Field: 3,992,262 bytes
 
 Compression ratio (vs JSON): 0.00x
 Compression ratio (vs gzip): 0.00x
@@ -431,7 +403,7 @@ SUCCESS CRITERIA
 
 ```
 
-**Elapsed Time:** 25.88 seconds
+**Elapsed Time:** 27.47 seconds
 **Exit Code:** 0
 ✓ Run evaluation script - SUCCESS
 **Status:** ✓ SUCCESS
@@ -444,7 +416,7 @@ Running: Automated chat interface test
 
 **Output:**
 ```
-Using temporary memory store: /tmp/tmpoalencvf
+Using temporary memory store: /tmp/tmpsgmb6rw5
 
 === Initializing Memory System ===
 
@@ -483,7 +455,7 @@ Results:
   has_pca: True
 
 === Saving System ===
-✓ System saved to /tmp/tmpoalencvf
+✓ System saved to /tmp/tmpsgmb6rw5
 
 === Loading System ===
 ✓ System loaded successfully
@@ -498,7 +470,7 @@ Field fitted: True
 
 ```
 
-**Elapsed Time:** 6.63 seconds
+**Elapsed Time:** 8.00 seconds
 **Exit Code:** 0
 ✓ Automated chat interface test - SUCCESS
 **Status:** ✓ SUCCESS
@@ -508,25 +480,25 @@ Field fitted: True
 
 
 **Total Steps:** 6
-**Passed:** 4 ✓
-**Failed:** 2 ✗
-**Success Rate:** 66.7%
+**Passed:** 6 ✓
+**Failed:** 0 ✗
+**Success Rate:** 100.0%
 
 ### Detailed Results:
 
-- Step 1: Install Package: ✗ FAIL
+- Step 1: Install Package: ✓ PASS
 - Step 2: Download Required Data: ✓ PASS
-- Step 3: Verify Installation: ✗ FAIL
+- Step 3: Verify Installation: ✓ PASS
 - Step 4: Run Demo: ✓ PASS
 - Step 5: Run Evaluation: ✓ PASS
 - Step 6: Chat Interface Test: ✓ PASS
 
 ### Overall Status
 
-**✗ SOME TESTS FAILED (2/6)**
+**✓ ALL TESTS PASSED**
 
-✗ SOME TESTS FAILED (2/6)
-**Total Test Duration:** 63.26 seconds
+✓ ALL TESTS PASSED
+**Total Test Duration:** 78.45 seconds
 
 
 ## Saving Results
