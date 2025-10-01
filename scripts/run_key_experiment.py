@@ -58,11 +58,16 @@ def run_comparison_experiment(num_samples, epochs, batch_size, device, save_dir)
     
     # Create datasets
     print(f"\nLoading dataset...")
+    # Use training split for both, but take different samples
+    # Train gets 90%, validation gets 10%
+    val_samples = min(1000, num_samples // 10)
+    train_samples = num_samples - val_samples
+    
     train_dataset = StreamingTextDataset(
         "fineweb-edu",
         tokenizer,
         max_seq_len=512,
-        num_samples=num_samples,
+        num_samples=train_samples,
         split="train"
     )
     
@@ -70,8 +75,8 @@ def run_comparison_experiment(num_samples, epochs, batch_size, device, save_dir)
         "fineweb-edu",
         tokenizer,
         max_seq_len=512,
-        num_samples=min(1000, num_samples // 10),
-        split="validation"
+        num_samples=val_samples,
+        split="train"  # Use train split, iterator will fetch different samples
     )
     
     train_loader = DataLoader(train_dataset, batch_size=batch_size, collate_fn=collate_fn)
