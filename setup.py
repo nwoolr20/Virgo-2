@@ -26,6 +26,8 @@ setup(
         "scikit-learn>=1.3.0",
         "textblob>=0.17.0",
         "tqdm>=4.65.0",
+        "datasets>=2.14.0",
+        "huggingface-hub>=0.16.0",
     ],
     extras_require={
         "dev": [
