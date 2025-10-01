@@ -17,6 +17,7 @@ from .scaled_neural_field_lm import (
     ScaledCoordinateEncoder,
     ScaledGenerativeField
 )
+from .baseline_transformer import BaselineTransformerLM
 
 __version__ = "0.1.0"
 
@@ -36,4 +37,5 @@ __all__ = [
     "ScaledNeuralFieldLM",
     "ScaledCoordinateEncoder",
     "ScaledGenerativeField",
+    "BaselineTransformerLM",
 ]
