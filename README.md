@@ -65,6 +65,30 @@ python -c "import nltk; nltk.download('brown'); nltk.download('punkt')"
 
 ## Quick Start
 
+### Training Neural Field Language Model
+
+Train the model on real text corpora from HuggingFace:
+
+```bash
+# Quick test (5 minutes)
+python scripts/train_nflm.py \
+    --dataset wikitext \
+    --sample-size 500 \
+    --epochs 10 \
+    --save-dir ./trained_models/my_model
+
+# Test the trained model
+python scripts/test_trained_model.py ./trained_models/my_model/best_model.pt
+
+# Full training on larger dataset
+python scripts/train_nflm.py \
+    --dataset wikitext \
+    --epochs 50 \
+    --save-dir ./trained_models/wikitext_full
+```
+
+See [TRAINING.md](TRAINING.md) for complete training documentation.
+
 ### Neural Field Language Model (Generative)
 
 ```python
