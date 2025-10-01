@@ -18,6 +18,11 @@ from .scaled_neural_field_lm import (
     ScaledGenerativeField
 )
 from .baseline_transformer import BaselineTransformerLM
+from .additional_baselines import (
+    LSTMBaseline,
+    TransformerMLPBaseline,
+    CoordinateTransformerBaseline
+)
 
 __version__ = "0.1.0"
 
@@ -38,4 +43,7 @@ __all__ = [
     "ScaledCoordinateEncoder",
     "ScaledGenerativeField",
     "BaselineTransformerLM",
+    "LSTMBaseline",
+    "TransformerMLPBaseline",
+    "CoordinateTransformerBaseline",
 ]
