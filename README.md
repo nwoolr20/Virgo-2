@@ -163,3 +163,22 @@ python scripts/demo.py
 ## License
 
 MIT
+
+## System Testing
+
+To run a comprehensive system test following all steps in the QUICKSTART guide:
+
+```bash
+python run_system_test.py
+```
+
+This will:
+1. Install the package and dependencies
+2. Download required data (NLTK, sentence-transformers model)
+3. Run the test suite
+4. Execute the interactive demo
+5. Run comprehensive evaluation
+6. Test the chat interface
+
+All results will be saved to `V2 System Test.md` with detailed output from each step.
+
