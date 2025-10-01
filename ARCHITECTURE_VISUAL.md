@@ -1,0 +1,365 @@
+# Visual Architecture Guide
+
+## System Overview
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                         VIRGO SYSTEM                                │
+│                                                                     │
+│  ┌────────────────────────┐      ┌────────────────────────────┐  │
+│  │   MEMORY SYSTEM        │      │  NEURAL FIELD LM           │  │
+│  │   (Original)           │      │  (New - Generative)        │  │
+│  │                        │      │                            │  │
+│  │  Purpose: Retrieval    │      │  Purpose: Generation       │  │
+│  │  Coords:  6D (manual)  │      │  Coords:  8D (learned)     │  │
+│  │  Output:  Embeddings   │      │  Output:  Token logits     │  │
+│  └────────────────────────┘      └────────────────────────────┘  │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+## Memory System Architecture (Original)
+
+```
+Text Input: "My name is Alice"
+     │
+     ├──────────────────────────────────────┐
+     │                                      │
+     ▼                                      ▼
+┌──────────────┐                    ┌─────────────────┐
+│ SBERT Model  │                    │  Hand-crafted   │
+│ (Pre-trained)│                    │  Coordinates    │
+└──────┬───────┘                    └────────┬────────┘
+       │                                     │
+       │ Fixed Embedding                    │ [temporal, turn_id,
+       │ [384 dims]                         │  semantic, importance,
+       │                                    │  speaker, sentiment]
+       │                                    │
+       ▼                                    ▼
+   ┌────────────────────────────────────────────┐
+   │          SIREN Neural Field                │
+   │    (Memorizes coord → embedding)           │
+   └────────────────┬───────────────────────────┘
+                    │
+                    ▼
+            ┌───────────────┐
+            │  FAISS Index  │
+            │   (Retrieval) │
+            └───────┬───────┘
+                    │
+                    ▼
+         Retrieved Memories (Context)
+```
+
+**Key Issue**: Field just compresses pre-computed embeddings. Not generative!
+
+## Neural Field LM Architecture (New)
+
+```
+Token IDs: [104, 101, 108, 108, 111]  ("hello")
+     │
+     ▼
+┌────────────────┐
+│ Token Embedding│  ← LEARNED
+│   (256 dims)   │
+└────────┬───────┘
+         │
+         ▼
+┌────────────────┐
+│   GRU Encoder  │  ← LEARNED
+│   (2 layers)   │
+└────────┬───────┘
+         │
+         ▼
+┌────────────────┐
+│  Coordinate    │  ← LEARNED
+│  Projection    │
+└────────┬───────┘
+         │
+         │ Learned Coordinates
+         │ [8 dims] in [0,1]^8
+         │
+         ▼
+┌────────────────┐
+│ SIREN Field    │  ← LEARNED
+│ (6 layers)     │
+└────────┬───────┘
+         │
+         ▼
+┌────────────────┐
+│ Token Logits   │  vocab_size dims
+│ (Softmax)      │
+└────────┬───────┘
+         │
+         ▼
+    Generated Token ID
+```
+
+**Key Advantage**: Everything learned end-to-end for generation!
+
+## Training Comparison
+
+### Memory System Training
+
+```
+┌──────────────┐
+│ Store Memory │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────────┐
+│ Extract:         │
+│ • Coords (manual)│
+│ • Embedding      │
+│   (SBERT)        │
+└──────┬───────────┘
+       │
+       ▼
+┌──────────────────┐
+│ Train Field:     │
+│ MSE(predicted,   │
+│     target_emb)  │
+└──────────────────┘
+
+Loss: Compression error
+Objective: Memorize embeddings
+```
+
+### Neural Field LM Training
+
+```
+┌──────────────┐
+│ Input Tokens │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────────┐
+│ Encode to Coords │ ← Learned
+└──────┬───────────┘
+       │
+       ▼
+┌──────────────────┐
+│ Query Field      │ ← Learned
+└──────┬───────────┘
+       │
+       ▼
+┌──────────────────┐
+│ Get Logits       │
+└──────┬───────────┘
+       │
+       ▼
+┌──────────────────┐
+│ CrossEntropy     │
+│ with targets     │
+└──────────────────┘
+
+Loss: Next-token prediction
+Objective: Language modeling
+```
+
+## Generation Flow
+
+### Memory System (No Generation)
+
+```
+Query: "What is my name?"
+   │
+   ▼
+┌─────────────────┐
+│ Encode to       │
+│ Embedding (SBERT)│
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ FAISS Search    │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Retrieve Top-K  │
+│ Stored Memories │
+└────────┬────────┘
+         │
+         ▼
+"My name is Alice" (retrieved)
+```
+
+### Neural Field LM (True Generation)
+
+```
+Prompt: "h"
+   │
+   ▼
+┌─────────────────┐
+│ Encode [h] to   │
+│ coordinates     │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Query Field for │
+│ next token logits│
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Sample: "e"     │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Append: "he"    │
+└────────┬────────┘
+         │
+         ▼ (repeat)
+┌─────────────────┐
+│ Generate: "ello"│
+└─────────────────┘
+         │
+         ▼
+Result: "hello" (generated!)
+```
+
+## Interpolation Visualization
+
+### Memory System (Not Meaningful)
+
+```
+Seq1: "My name is Alice"
+Coords1: [0.3, 0.2, 0.5, 0.7, 0.0, 0.6]
+         [temp, turn, sem, imp, spkr, sent]
+
+Seq2: "Nice to meet you"  
+Coords2: [0.4, 0.3, 0.6, 0.8, 1.0, 0.5]
+
+Interpolate α=0.5:
+Coords_mid = [0.35, 0.25, 0.55, 0.75, 0.5, 0.55]
+
+❌ What does this mean semantically?
+   Just averaged heuristics!
+   Can't generate text from it.
+```
+
+### Neural Field LM (Meaningful!)
+
+```
+Seq1: "hello"
+Coords1: [learned 8D coordinate]
+         [0.12, 0.89, 0.34, 0.67, 0.45, 0.23, 0.78, 0.56]
+
+Seq2: "goodbye"
+Coords2: [learned 8D coordinate]
+         [0.87, 0.21, 0.65, 0.43, 0.78, 0.12, 0.34, 0.90]
+
+Interpolate α=0.5:
+Coords_mid = (1-α)*Coords1 + α*Coords2
+
+Query Field:
+Logits = Field(Coords_mid)
+
+Decode:
+✅ Result: Actual interpolated text!
+   The coordinate space was learned
+   to make this meaningful.
+```
+
+## Component Sizes
+
+### Memory System
+```
+┌─────────────────────────────┐
+│ ConversationCoordinateSystem│  (encoder: 90MB)
+├─────────────────────────────┤
+│ ConversationField           │  (~1-2M params)
+├─────────────────────────────┤
+│ FAISS Index                 │  (N × 384 × 4 bytes)
+├─────────────────────────────┤
+│ Memories                    │  (N × metadata)
+└─────────────────────────────┘
+
+Total: ~90MB + field + index
+Purpose: Retrieval
+```
+
+### Neural Field LM
+```
+┌─────────────────────────────┐
+│ Token Embeddings            │  (vocab × 256)
+├─────────────────────────────┤
+│ GRU Encoder                 │  (~500K params)
+├─────────────────────────────┤
+│ Coordinate Projection       │  (~130K params)
+├─────────────────────────────┤
+│ SIREN Field (6 layers)      │  (~2M params)
+├─────────────────────────────┤
+│ Output Projection           │  (512 × vocab)
+└─────────────────────────────┘
+
+Total: ~2-5M params (trainable)
+Purpose: Generation
+```
+
+## Use Case Comparison
+
+```
+┌────────────────────────────────────────────────────────┐
+│                    USE CASES                           │
+├────────────────────────────────────────────────────────┤
+│                                                        │
+│  Memory System (Retrieval)                            │
+│  ────────────────────────────                         │
+│  ✓ Store conversation history                         │
+│  ✓ Retrieve relevant context                          │
+│  ✓ Build RAG systems                                  │
+│  ✓ Remember facts/events                              │
+│  ✓ Context-aware chatbots                             │
+│                                                        │
+│  Neural Field LM (Generation)                         │
+│  ───────────────────────────                          │
+│  ✓ Generate new text                                  │
+│  ✓ Interpolate between concepts                       │
+│  ✓ Explore continuous semantics                       │
+│  ✓ Novel architecture research                        │
+│  ✓ Conditional generation                             │
+│                                                        │
+│  Hybrid (Both)                                        │
+│  ────────────                                         │
+│  ✓ Neural field RAG                                   │
+│  ✓ Generation with memory                             │
+│  ✓ Context-aware generation                           │
+│                                                        │
+└────────────────────────────────────────────────────────┘
+```
+
+## Summary: Why NFLM is TRUE
+
+```
+┌──────────────────────────────────────────────────────────┐
+│         FIVE CRITERIA FOR TRUE NEURAL FIELD LM           │
+├──────────────────────────────────────────────────────────┤
+│                                                          │
+│  1. Continuous Function ✅                               │
+│     Field is continuous function approximator            │
+│     Can query at any coordinate in [0,1]^8              │
+│                                                          │
+│  2. Learned Coordinates ✅                               │
+│     Coordinates learned end-to-end from data             │
+│     Not hand-crafted heuristics                          │
+│                                                          │
+│  3. Generative ✅                                        │
+│     Outputs token distributions                          │
+│     Generates new text autoregressively                  │
+│                                                          │
+│  4. Meaningful Interpolation ✅                          │
+│     Linear interpolation produces text                   │
+│     Demonstrates continuous semantics                    │
+│                                                          │
+│  5. Language Modeling ✅                                 │
+│     Trained on next-token prediction                     │
+│     Cross-entropy loss on tokens                         │
+│                                                          │
+└──────────────────────────────────────────────────────────┘
+```
+
+This is a **TRUE** neural field language model!

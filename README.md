@@ -1,13 +1,41 @@
 # Virgo Neural Field Language Model
 
-A neural field-based conversation memory system that uses SIREN networks to compress and retrieve conversational context.
+A neural field-based system providing **two distinct capabilities**:
+1. **Retrieval-Augmented Memory**: Conversation memory with SIREN compression and FAISS retrieval
+2. **Generative Neural Field LM**: True generative language model using learned coordinates and continuous fields
+
+## Two Systems in One
+
+### 1. Memory System (Original)
+A retrieval-based conversation memory that compresses context using neural fields.
+- **Purpose**: Store and retrieve conversation history
+- **Coordinates**: Hand-crafted 6D space (temporal, turn_id, semantic, importance, speaker, sentiment)
+- **Output**: Retrieved memories for context
+- **Use case**: Chatbots with memory, context-aware systems
+
+### 2. Neural Field Language Model (NEW)
+A true generative language model that learns continuous representations.
+- **Purpose**: Generate new text autoregressively
+- **Coordinates**: Learned 8D space (trained end-to-end)
+- **Output**: Token distributions for text generation
+- **Use case**: Text generation, interpolation, continuous semantic spaces
+
+See [NFLM.md](NFLM.md) for detailed documentation on the generative system.
 
 ## Features
 
+### Memory System
 - **6D Coordinate System**: Maps conversations into a continuous coordinate space
 - **SIREN Neural Field**: Uses sinusoidal representation networks for efficient memory compression
 - **FAISS Integration**: Fast retrieval using vector similarity search
 - **Persistent Storage**: Save and load trained models across sessions
+
+### Neural Field Language Model (NEW)
+- **Learned Coordinates**: 8D coordinate space learned from text
+- **Generative Field**: SIREN-based field that outputs token logits
+- **Autoregressive Generation**: Generate text token-by-token
+- **Sequence Interpolation**: Interpolate between texts in continuous space
+- **End-to-End Training**: Train on language modeling objective
 
 ## Installation
 
@@ -37,7 +65,54 @@ python -c "import nltk; nltk.download('brown'); nltk.download('punkt')"
 
 ## Quick Start
 
-### Using the Launch Script (Recommended)
+### Neural Field Language Model (Generative)
+
+```python
+from virgo import NeuralFieldLM, CharTokenizer, train_neural_field_lm
+import torch
+
+# Prepare training data
+texts = ["hello world", "hi there", "good morning"]
+tokenizer = CharTokenizer()
+tokenizer.build_vocab(texts)
+
+# Create training pairs (next-token prediction)
+train_data = []
+for text in texts:
+    tokens = tokenizer.encode(text, add_eos=False)
+    if len(tokens) > 1:
+        input_ids = torch.tensor([tokens[:-1]], dtype=torch.long)
+        target_ids = torch.tensor([tokens[1:]], dtype=torch.long)
+        train_data.append((input_ids, target_ids))
+
+# Create and train model
+model = NeuralFieldLM(vocab_size=tokenizer.vocab_size, coord_dim=8)
+train_neural_field_lm(model, train_data, epochs=10, lr=1e-3)
+
+# Generate text
+prompt = torch.tensor(tokenizer.encode("hello", add_eos=False), dtype=torch.long)
+generated = model.generate(prompt, max_length=20)
+print(tokenizer.decode(generated.tolist()))
+
+# Interpolate between sequences
+seq1 = torch.tensor(tokenizer.encode("hello", add_eos=False), dtype=torch.long)
+seq2 = torch.tensor(tokenizer.encode("hi wo", add_eos=False), dtype=torch.long)
+interp = model.interpolate_sequences(seq1, seq2, alpha=0.5)
+print(tokenizer.decode(interp.tolist()))
+```
+
+**Try the demos:**
+```bash
+# Quick example
+python examples/nflm_quick_start.py
+
+# Full demo
+python scripts/demo_nflm.py
+```
+
+### Memory System (Retrieval)
+
+Using the Launch Script (Recommended)
 
 ```bash
 # Start interactive chat
@@ -155,10 +230,19 @@ python scripts/demo.py
 
 ## Architecture
 
+### Memory System (Retrieval)
 - **Coordinates** (`virgo/coordinates.py`): 6D coordinate system mapping conversations to [temporal, turn_id, semantic, importance, speaker, sentiment]
 - **Field** (`virgo/field.py`): SIREN-based neural field for continuous function representation
 - **Memory** (`virgo/memory.py`): Complete memory storage and retrieval system
 - **Chat** (`virgo/chat.py`): Interactive chat interface
+
+### Neural Field Language Model (Generative)
+- **CoordinateEncoder** (`virgo/neural_field_lm.py`): Learns 8D coordinates from token sequences
+- **GenerativeField** (`virgo/neural_field_lm.py`): SIREN-based field that outputs token logits
+- **NeuralFieldLM** (`virgo/neural_field_lm.py`): Complete generative language model
+- **CharTokenizer** (`virgo/tokenizer.py`): Character-level tokenization
+
+See [NFLM.md](NFLM.md) for detailed architecture documentation.
 
 ## License
 
