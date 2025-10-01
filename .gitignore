@@ -45,6 +45,7 @@ test_memory/
 *.index
 *.json
 faiss.index
+*.log
 
 # OS
 .DS_Store
