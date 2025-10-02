@@ -43,8 +43,10 @@ def show_usage():
     print("Usage: python3 launch_virgo.py [command] [options]")
     print()
     print("Commands:")
-    print("  chat [path]       Start interactive chat interface")
-    print("                    Optional: Specify memory storage path (default: ./memory_store)")
+    print("  train             Train neural field model on HuggingFace datasets")
+    print()
+    print("  chat [model_path] Start interactive chat with trained neural field")
+    print("                    Optional: Specify model path (default: ./trained_models/best_model.pt)")
     print()
     print("  demo              Run the demo script")
     print()
@@ -55,30 +57,76 @@ def show_usage():
     print("  help              Show this help message")
     print()
     print("Examples:")
+    print("  python3 launch_virgo.py train")
     print("  python3 launch_virgo.py chat")
-    print("  python3 launch_virgo.py chat ./my_memory")
+    print("  python3 launch_virgo.py chat ./trained_models/my_model.pt")
     print("  python3 launch_virgo.py demo")
     print("  python3 launch_virgo.py evaluate")
     print("  python3 launch_virgo.py test")
     print()
 
 
-def launch_chat(memory_path=None):
-    """Launch the chat interface."""
-    print_header("Starting Virgo Chat Interface")
+def launch_train():
+    """Launch the training script."""
+    print_header("Training Virgo Neural Field Model")
     
     if not check_installation():
         sys.exit(1)
     
-    memory_path = memory_path or "./memory_store"
+    print("Training neural field language model on HuggingFace datasets...")
+    print()
+    print("Configuration:")
+    print("  - Dataset: wikitext, fineweb-edu, openwebtext (multi-dataset training)")
+    print("  - Coordinate dimension: 8D")
+    print("  - Epochs: 30")
+    print("  - Save directory: ./trained_models/virgo_model")
+    print()
+    print("This will train continuously on multiple datasets to improve coherence.")
+    print("=" * 60)
+    print()
     
-    print(f"Memory storage path: {memory_path}")
+    # Add current directory to PYTHONPATH
+    script_dir = Path(__file__).parent.absolute()
+    env = os.environ.copy()
+    env['PYTHONPATH'] = f"{script_dir}:{env.get('PYTHONPATH', '')}"
+    
+    train_script = script_dir / "scripts" / "train_nflm.py"
+    subprocess.run([
+        sys.executable, str(train_script),
+        "--dataset", "wikitext",
+        "--sample-size", "10000",
+        "--epochs", "30",
+        "--batch-size", "16",
+        "--coord-dim", "8",
+        "--save-dir", "./trained_models/virgo_model"
+    ], env=env)
+
+
+def launch_chat(model_path=None):
+    """Launch the conversational chat interface with trained neural field."""
+    print_header("Starting Virgo Neural Field Chat")
+    
+    if not check_installation():
+        sys.exit(1)
+    
+    model_path = model_path or "./trained_models/virgo_model/best_model.pt"
+    
+    # Check if model exists
+    if not Path(model_path).exists():
+        print(f"Error: Model not found at {model_path}")
+        print()
+        print("Please train a model first:")
+        print("  python3 launch_virgo.py train")
+        print()
+        print("Or specify a valid model path:")
+        print("  python3 launch_virgo.py chat /path/to/model.pt")
+        sys.exit(1)
+    
+    print(f"Using model: {model_path}")
     print()
     print("Commands:")
-    print("  Type messages to chat")
-    print("  'save'  - Train field and save memory")
-    print("  'stats' - Show memory statistics")
-    print("  'quit'  - Exit")
+    print("  Type messages to chat with the neural field")
+    print("  'quit' - Exit")
     print()
     print("=" * 60)
     print()
@@ -88,8 +136,10 @@ def launch_chat(memory_path=None):
     env = os.environ.copy()
     env['PYTHONPATH'] = f"{script_dir}:{env.get('PYTHONPATH', '')}"
     
+    # Create a simple chat script
+    chat_script = script_dir / "scripts" / "chat_with_model.py"
     subprocess.run(
-        [sys.executable, "-m", "virgo.chat", memory_path],
+        [sys.executable, str(chat_script), model_path],
         env=env
     )
 
@@ -153,9 +203,11 @@ def main():
     
     command = sys.argv[1].lower()
     
-    if command == "chat":
-        memory_path = sys.argv[2] if len(sys.argv) > 2 else None
-        launch_chat(memory_path)
+    if command == "train":
+        launch_train()
+    elif command == "chat":
+        model_path = sys.argv[2] if len(sys.argv) > 2 else None
+        launch_chat(model_path)
     elif command == "demo":
         launch_demo()
     elif command == "evaluate":

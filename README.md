@@ -67,7 +67,17 @@ python -c "import nltk; nltk.download('brown'); nltk.download('punkt')"
 
 ### Training Neural Field Language Model
 
-Train the model on real text corpora from HuggingFace:
+The easiest way to train and use the model:
+
+```bash
+# Train the model on HuggingFace datasets
+python3 launch_virgo.py train
+
+# Chat with the trained model
+python3 launch_virgo.py chat
+```
+
+For advanced training options:
 
 ```bash
 # Quick test (5 minutes)
@@ -136,10 +146,13 @@ python scripts/demo_nflm.py
 
 ### Memory System (Retrieval)
 
-Using the Launch Script (Recommended)
+### Using the Launch Script (Recommended)
 
 ```bash
-# Start interactive chat
+# Train the neural field model
+python3 launch_virgo.py train
+
+# Start interactive chat with trained model
 python3 launch_virgo.py chat
 
 # Run demo
