@@ -51,7 +51,7 @@ def test_coherence(model, tokenizer, test_prompts):
     print(f"\nCoherence Score: {coherent_count}/{total_tests} ({score*100:.1f}%)")
     print("="*70)
     
-    return score >= 0.6  # 60% coherent = pass
+    return score >= 0.9  # 90% coherent = pass
 
 def main():
     print("="*70)
