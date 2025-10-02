@@ -1,9 +1,6 @@
 """Virgo Neural Field Language Model."""
 
-from .coordinates import ConversationCoordinateSystem
 from .field import ConversationField, SIRENLayer
-from .memory import MemorySystem, Memory
-from .chat import SimpleChat
 from .neural_field_lm import (
     NeuralFieldLM,
     CoordinateEncoder,
@@ -27,12 +24,8 @@ from .additional_baselines import (
 __version__ = "0.1.0"
 
 __all__ = [
-    "ConversationCoordinateSystem",
     "ConversationField",
     "SIRENLayer",
-    "MemorySystem",
-    "Memory",
-    "SimpleChat",
     "NeuralFieldLM",
     "CoordinateEncoder",
     "GenerativeField",

@@ -1,81 +1,82 @@
-"""Integration tests."""
+"""Integration tests for neural field language model."""
 
 import pytest
 import torch
-import tempfile
-import shutil
-from pathlib import Path
-from virgo import MemorySystem
+from virgo import NeuralFieldLM, CharTokenizer, train_neural_field_lm
 
 
-def test_end_to_end():
-    """Complete end-to-end test."""
-    system = MemorySystem()
-    
-    # Simulate conversation
-    conversation = [
-        ("My name is Alice", 0),
-        ("Nice to meet you Alice!", 1),
-        ("I have two cats named Whiskers and Mittens", 0),
-        ("That's lovely! What are their names again?", 1),
-        ("Whiskers and Mittens", 0),
-        ("I work as a software engineer", 0),
-        ("That sounds interesting!", 1)
+def test_end_to_end_training_and_generation():
+    """Complete end-to-end test of training and generation."""
+    # Create small training data
+    texts = [
+        "the cat sat on the mat",
+        "the dog ran in the park",
+        "the bird flew in the sky"
     ]
     
-    for text, speaker in conversation:
-        system.store(text, speaker_id=speaker)
+    # Build tokenizer
+    tokenizer = CharTokenizer()
+    tokenizer.build_vocab(texts)
     
-    # Train field
-    system.fit_field(num_steps=1000, verbose=False)
+    # Prepare training data
+    train_data = []
+    for text in texts:
+        tokens = tokenizer.encode(text, add_eos=False)
+        if len(tokens) > 1:
+            input_ids = torch.tensor([tokens[:-1]], dtype=torch.long)
+            target_ids = torch.tensor([tokens[1:]], dtype=torch.long)
+            train_data.append((input_ids, target_ids))
     
-    # Test retrieval
-    results = system.retrieve("What is my name?", k=3)
-    texts = [m.text for m, _ in results]
-    assert any("Alice" in text for text in texts)
+    # Create and train model
+    model = NeuralFieldLM(vocab_size=tokenizer.vocab_size, coord_dim=8)
+    train_neural_field_lm(model, train_data, epochs=5, lr=1e-3)
     
-    results = system.retrieve("Tell me about my pets", k=3)
-    texts = [m.text for m, _ in results]
-    assert any("cats" in text.lower() or "Whiskers" in text for text in texts)
+    # Test generation
+    prompt = tokenizer.encode("the", add_eos=False)
+    input_ids = torch.tensor(prompt, dtype=torch.long)
     
-    results = system.retrieve("What do I do for work?", k=3)
-    texts = [m.text for m, _ in results]
-    assert any("engineer" in text.lower() for text in texts)
+    with torch.no_grad():
+        output_ids = model.generate(input_ids, max_length=20, temperature=1.0)
+    
+    generated_text = tokenizer.decode(output_ids.tolist())
+    
+    # Should generate something
+    assert len(generated_text) > len("the")
+    assert generated_text.startswith("the")
 
 
-def test_persistence_end_to_end():
-    """Test complete save/load cycle."""
-    temp_dir = Path(tempfile.mkdtemp())
+def test_model_save_and_load():
+    """Test model checkpoint saving and loading."""
+    import tempfile
+    from pathlib import Path
     
-    try:
-        # Create and train system
-        system1 = MemorySystem()
+    # Create and train small model
+    texts = ["hello world", "test text"]
+    tokenizer = CharTokenizer()
+    tokenizer.build_vocab(texts)
+    
+    model1 = NeuralFieldLM(vocab_size=tokenizer.vocab_size, coord_dim=4)
+    
+    # Save checkpoint
+    with tempfile.TemporaryDirectory() as tmpdir:
+        save_path = Path(tmpdir) / "model.pt"
         
-        conversations = [
-            ("My favorite color is blue", 0),
-            ("I like pizza", 0),
-            ("I live in Seattle", 0),
-            ("I have a dog named Max", 0)
-        ]
+        checkpoint = {
+            'model_state_dict': model1.state_dict(),
+            'vocab_size': tokenizer.vocab_size,
+            'coord_dim': 4,
+            'char_to_idx': tokenizer.char_to_idx,
+            'idx_to_char': tokenizer.idx_to_char,
+        }
+        torch.save(checkpoint, save_path)
         
-        for text, speaker in conversations:
-            system1.store(text, speaker_id=speaker)
+        # Load checkpoint
+        loaded = torch.load(save_path, map_location='cpu', weights_only=False)
         
-        system1.fit_field(num_steps=500, verbose=False)
-        system1.save(temp_dir)
+        model2 = NeuralFieldLM(vocab_size=loaded['vocab_size'], coord_dim=loaded['coord_dim'])
+        model2.load_state_dict(loaded['model_state_dict'])
         
-        # Load and verify
-        system2 = MemorySystem()
-        system2.load(temp_dir)
-        
-        # Test queries
-        results = system2.retrieve("What color do I like?", k=2)
-        texts = [m.text for m, _ in results]
-        assert any("blue" in text.lower() for text in texts)
-        
-        results = system2.retrieve("Where do I live?", k=2)
-        texts = [m.text for m, _ in results]
-        assert any("Seattle" in text for text in texts)
-        
-    finally:
-        shutil.rmtree(temp_dir)
+        # Verify models are equivalent
+        for p1, p2 in zip(model1.parameters(), model2.parameters()):
+            assert torch.allclose(p1, p2)
+
