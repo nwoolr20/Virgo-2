@@ -406,7 +406,7 @@ def launch_demo():
     env = os.environ.copy()
     env['PYTHONPATH'] = f"{script_dir}:{env.get('PYTHONPATH', '')}"
     
-    demo_script = script_dir / "scripts" / "demo.py"
+    demo_script = script_dir / "scripts" / "demo_nflm.py"
     subprocess.run([sys.executable, str(demo_script)], env=env)
 
 
