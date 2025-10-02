@@ -267,6 +267,8 @@ python scripts/demo.py
 
 ## Architecture
 
+For detailed information about the simplified repository structure, see [STRUCTURE.md](STRUCTURE.md).
+
 ### Memory System (Retrieval)
 - **Coordinates** (`virgo/coordinates.py`): 6D coordinate system mapping conversations to [temporal, turn_id, semantic, importance, speaker, sentiment]
 - **Field** (`virgo/field.py`): SIREN-based neural field for continuous function representation

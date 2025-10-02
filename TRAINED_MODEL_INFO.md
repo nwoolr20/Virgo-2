@@ -7,11 +7,11 @@ A Neural Field Language Model has been successfully trained on WikiText-103 data
 ### Training Configuration
 
 - **Dataset**: WikiText-103 (High-quality Wikipedia articles)
-- **Sample Size**: 1,000 text samples
+- **Sample Size**: 1,002 text samples
 - **Training Samples**: 902
 - **Validation Samples**: 100
 - **Epochs**: 20
-- **Batch Size**: 32
+- **Batch Size**: 16
 - **Learning Rate**: 1e-4 (AdamW optimizer)
 - **Vocabulary Size**: 162 characters
 - **Coordinate Dimension**: 8
@@ -20,27 +20,32 @@ A Neural Field Language Model has been successfully trained on WikiText-103 data
 ### Training Results
 
 **Loss Reduction:**
-- Initial training loss: 3.256
-- Final training loss: 1.481
-- **Improvement: 54.5%**
+- Initial training loss: 2.6758 (epoch 1)
+- Final training loss: 1.6431 (epoch 20)
+- **Improvement: 38.6%**
 
 **Validation Loss:**
-- Initial validation loss: 2.768
-- Best validation loss: 1.778 (epoch 16)
-- Final validation loss: 1.800
+- Initial validation loss: 2.4676 (epoch 1)
+- Best validation loss: 1.8757 (epoch 20)
+- **Improvement: 24.0%**
 
 ### Model Files
 
-The trained model is saved in `trained_models/wikitext_trained/`:
+The trained model is saved in `trained_models/virgo_model/`:
 
 ```
-trained_models/wikitext_trained/
-├── checkpoint_epoch_10.pt (27 MB)  - Full checkpoint at epoch 10
-├── checkpoint_epoch_20.pt (27 MB)  - Full checkpoint at epoch 20
-├── final_model.pt (8.8 MB)         - Final trained model
-├── model_epoch_10.pt (8.8 MB)      - Model weights at epoch 10
-├── model_epoch_20.pt (8.8 MB)      - Model weights at epoch 20
-└── training_history.json           - Complete training metrics
+trained_models/virgo_model/
+├── best_model.pt (27 MB)            - Best model based on validation loss
+├── final_model.pt (8.8 MB)          - Final trained model (weights only)
+├── checkpoint_epoch_5.pt (27 MB)    - Full checkpoint at epoch 5
+├── checkpoint_epoch_10.pt (27 MB)   - Full checkpoint at epoch 10
+├── checkpoint_epoch_15.pt (27 MB)   - Full checkpoint at epoch 15
+├── checkpoint_epoch_20.pt (27 MB)   - Full checkpoint at epoch 20
+├── model_epoch_5.pt (8.8 MB)        - Model weights at epoch 5
+├── model_epoch_10.pt (8.8 MB)       - Model weights at epoch 10
+├── model_epoch_15.pt (8.8 MB)       - Model weights at epoch 15
+├── model_epoch_20.pt (8.8 MB)       - Model weights at epoch 20
+└── training_history.json            - Complete training metrics
 ```
 
 **Note:** Model files (*.pt) are excluded from git by default due to their size. They are stored locally.
