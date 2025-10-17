@@ -1,103 +1,132 @@
-"""Comprehensive evaluation of neural field system."""
+"""Comprehensive evaluation of neural field language model."""
 
-import json
-import gzip
-import tempfile
-import shutil
+import sys
+import torch
 from pathlib import Path
-from virgo.memory import MemorySystem
+
+# Add parent directory to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from virgo import NeuralFieldLM, CharTokenizer
 
 
-def evaluate_compression():
-    """Compare storage efficiency."""
+def evaluate_generation_quality(model, tokenizer, prompts, device='cpu'):
+    """Evaluate text generation quality."""
     print("\n" + "=" * 60)
-    print("COMPRESSION EVALUATION")
+    print("GENERATION QUALITY EVALUATION")
     print("=" * 60)
     
-    # Create test conversation
-    system = MemorySystem()
+    model.eval()
+    results = []
     
-    conversations = [
-        ("My name is Alice", 0),
-        ("I work as a software engineer", 0),
-        ("I have two cats named Whiskers and Mittens", 0),
-        ("Nice to meet you, Alice!", 1),
-        ("What do you do for work?", 1),
-        ("Tell me about your cats", 1),
-    ] * 50  # Repeat to simulate longer conversation
+    for prompt in prompts:
+        print(f"\nPrompt: '{prompt}'")
+        
+        # Encode
+        tokens = tokenizer.encode(prompt, add_eos=False)
+        input_ids = torch.tensor(tokens, dtype=torch.long).to(device)
+        
+        # Generate
+        with torch.no_grad():
+            output_ids = model.generate(input_ids, max_length=100, temperature=0.8)
+        
+        generated = tokenizer.decode(output_ids.cpu().tolist())
+        print(f"Generated: '{generated}'")
+        
+        results.append({
+            "prompt": prompt,
+            "generated": generated,
+            "length": len(output_ids)
+        })
     
-    for text, speaker in conversations:
-        system.store(text, speaker)
-    
-    system.fit_field(num_steps=3000, verbose=True)
-    
-    # Save neural field system
-    temp_dir = Path(tempfile.mkdtemp())
-    try:
-        system.save(temp_dir)
-        
-        # Calculate sizes
-        nf_size = sum(f.stat().st_size for f in temp_dir.rglob("*") if f.is_file())
-        
-        # Compare to JSON
-        json_data = [{"text": m.text, "speaker": m.speaker_id} for m in system.memories]
-        json_bytes = json.dumps(json_data).encode()
-        json_size = len(json_bytes)
-        json_gzip_size = len(gzip.compress(json_bytes))
-        
-        print("\n=== Storage Comparison ===")
-        print(f"Memories stored: {len(system.memories)}")
-        print(f"Raw JSON: {json_size:,} bytes")
-        print(f"Gzipped JSON: {json_gzip_size:,} bytes")
-        print(f"Neural Field: {nf_size:,} bytes")
-        print(f"\nCompression ratio (vs JSON): {json_size / nf_size:.2f}x")
-        print(f"Compression ratio (vs gzip): {json_gzip_size / nf_size:.2f}x")
-        
-        # Test retrieval accuracy
-        test_queries = [
-            ("What is my name?", "Alice"),
-            ("What are my cats called?", "Whiskers"),
-            ("What is my job?", "engineer"),
-        ]
-        
-        print("\n=== Retrieval Tests ===")
-        correct = 0
-        for query, expected_word in test_queries:
-            results = system.retrieve(query, k=3)
-            found = any(expected_word.lower() in m.text.lower() for m, _ in results)
-            status = "✓" if found else "✗"
-            print(f"{status} Query: '{query}' - Expected: '{expected_word}'")
-            if found:
-                correct += 1
-        
-        accuracy = correct / len(test_queries)
-        print(f"\nRetrieval accuracy: {accuracy * 100:.1f}%")
-        
-        return {
-            "compression_vs_json": json_size / nf_size,
-            "compression_vs_gzip": json_gzip_size / nf_size,
-            "retrieval_accuracy": accuracy
-        }
-    finally:
-        shutil.rmtree(temp_dir)
+    return results
 
 
-def evaluate_persistence():
-    """Test save/load functionality."""
+def evaluate_interpolation(model, tokenizer, device='cpu'):
+    """Test coordinate space interpolation."""
     print("\n" + "=" * 60)
-    print("PERSISTENCE EVALUATION")
+    print("INTERPOLATION EVALUATION")
     print("=" * 60)
     
-    temp_dir = Path(tempfile.mkdtemp())
+    model.eval()
     
-    try:
-        # Phase 1: Create and save
-        print("\nPhase 1: Creating and saving system...")
-        system1 = MemorySystem()
+    test_pairs = [
+        ("the cat", "the dog"),
+        ("hello world", "hi there"),
+        ("good morning", "good evening"),
+    ]
+    
+    for text1, text2 in test_pairs:
+        print(f"\nInterpolating: '{text1}' → '{text2}'")
         
-        test_data = [
-            ("My favorite color is blue", 0),
-            ("I like pizza", 0),
+        tokens1 = torch.tensor(tokenizer.encode(text1, add_eos=False), dtype=torch.long).to(device)
+        tokens2 = torch.tensor(tokenizer.encode(text2, add_eos=False), dtype=torch.long).to(device)
+        
+        for alpha in [0.0, 0.25, 0.5, 0.75, 1.0]:
+            with torch.no_grad():
+                result = model.interpolate_sequences(tokens1, tokens2, alpha=alpha)
+            interpolated = tokenizer.decode(result.cpu().tolist())
+            print(f"  α={alpha:.2f}: '{interpolated}'")
+
+
+def main():
+    print("=" * 60)
+    print("NEURAL FIELD SYSTEM EVALUATION")
+    print("=" * 60)
+    
+    # Check for trained model
+    model_path = Path("./trained_models/virgo_model/best_model.pt")
+    if not model_path.exists():
+        print(f"\n✗ No trained model found at {model_path}")
+        print("Please train a model first:")
+        print("  python3 launch_virgo.py train model")
+        return
+    
+    # Load model
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    print(f"\nLoading model from: {model_path}")
+    print(f"Device: {device}")
+    
+    checkpoint = torch.load(model_path, map_location=device, weights_only=False)
+    
+    vocab_size = checkpoint['vocab_size']
+    coord_dim = checkpoint.get('coord_dim', 8)
+    
+    model = NeuralFieldLM(vocab_size=vocab_size, coord_dim=coord_dim)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    model = model.to(device)
+    
+    tokenizer = CharTokenizer()
+    tokenizer.char_to_idx = checkpoint['char_to_idx']
+    tokenizer.idx_to_char = checkpoint['idx_to_char']
+    
+    print(f"✓ Model loaded")
+    print(f"  Vocabulary: {vocab_size}")
+    print(f"  Coordinates: {coord_dim}D")
+    print(f"  Parameters: {sum(p.numel() for p in model.parameters()):,}")
+    
+    # Evaluate generation
+    test_prompts = [
+        "the",
+        "hello",
+        "artificial intelligence",
+        "in the",
+        "once upon a time",
+    ]
+    
+    generation_results = evaluate_generation_quality(model, tokenizer, test_prompts, device)
+    
+    # Evaluate interpolation
+    evaluate_interpolation(model, tokenizer, device)
+    
+    print("\n" + "=" * 60)
+    print("EVALUATION COMPLETE")
+    print("=" * 60)
+
+
+if __name__ == "__main__":
+    main()
+
             ("I live in Seattle", 0),
         ]
         
