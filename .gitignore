@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+
+# PyTorch
+*.pt
+*.pth
+*.ckpt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# HuggingFace cache
+.cache/
+
+# Trained models (keep structure but ignore large files)
+trained_models/*/best_model.pt
+trained_models/*/checkpoints/
+
+# Temporary files
+*.log
+*.tmp
+.DS_Store
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
