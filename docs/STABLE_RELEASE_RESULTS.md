@@ -38,3 +38,7 @@ Verified public exports import through `from virgo2 import *` coverage test.
 
 ## Final Recommendation
 Ready for 0.9.0 tag; promote to 1.0.0 after remaining limitations are reduced.
+
+
+## Neural-field LM status (required core)
+Virgo-2 targets a small but powerful neural-field language model. DDiF dataset-to-field distillation and the LM stack are **required core infrastructure** (beta maturity), not optional sidecars. Stable scope remains memory substrate, vault/registry/lifecycle, and deterministic reflection/folding. Experimental scope includes only GPT/LLaMA-level coherence claims, multimodal expansion, and large-scale training claims.

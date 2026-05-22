@@ -6,6 +6,8 @@ from pathlib import Path
 from .browser_export import export_browser_bundle
 from .consolidation import FieldConsolidator
 from .conversation import ConversationMemory
+from .lm.field_lm import NeuralFieldLanguageModel
+from .training.evaluate import evaluate_checkpoint
 from .curriculum import CurriculumQueue
 from .ddif import TextFieldDistiller
 from .field_builder import FieldBuildRequest, FieldBuilder
@@ -105,6 +107,14 @@ def main() -> None:
     lm_generate.add_argument("model_dir")
     lm_generate.add_argument("prompt")
     lm_generate.add_argument("--max-chars", type=int, default=200)
+    lm_generate.add_argument("--seed", type=int, default=0)
+    lm_generate.add_argument("--deterministic", action="store_true")
+
+    lm_evaluate = sub.add_parser("lm-evaluate")
+    lm_evaluate.add_argument("model_dir")
+    lm_evaluate.add_argument("input_txt")
+    lm_evaluate.add_argument("--prompt", default="")
+    lm_evaluate.add_argument("--report", default=None)
 
     ddif_reconstruct = sub.add_parser("ddif-reconstruct")
     ddif_reconstruct.add_argument("input_txt")
@@ -114,6 +124,12 @@ def main() -> None:
     ddif_sample.add_argument("output_dir")
     ddif_sample.add_argument("--prompt", default="hello")
     ddif_sample.add_argument("--max-chars", type=int, default=120)
+
+    chat = sub.add_parser("chat")
+    chat.add_argument("vault_dir")
+    chat.add_argument("model_dir")
+    chat.add_argument("message")
+    chat.add_argument("--session-id", default=None)
 
     # New automation commands
     create_field = sub.add_parser("create-field")
@@ -264,9 +280,18 @@ def main() -> None:
         distiller.save(args.model_dir)
         print(f"Saved neural-field LM to {args.model_dir}")
     elif args.cmd == "lm-generate":
-        model = TextFieldDistiller()
-        model.model = model.model.load(args.model_dir)
-        print(model.sample(args.prompt, max_chars=args.max_chars))
+        model = NeuralFieldLanguageModel.load(args.model_dir)
+        print(model.generate(args.prompt, max_chars=args.max_chars, seed=args.seed, deterministic=args.deterministic))
+    elif args.cmd == "lm-evaluate":
+        text = Path(args.input_txt).read_text(encoding="utf-8")
+        metrics = evaluate_checkpoint(args.model_dir, text=text, sample_prompt=args.prompt)
+        print(metrics)
+        if args.report:
+            lines = ["# Virgo-2 LM Evaluation", ""]
+            for key, value in metrics.items():
+                lines.append(f"- **{key}**: {value}")
+            Path(args.report).write_text("\n".join(lines) + "\n", encoding="utf-8")
+            print(f"report={args.report}")
     elif args.cmd == "ddif-reconstruct":
         text = Path(args.input_txt).read_text(encoding="utf-8")
         distiller = TextFieldDistiller(seed=0)
@@ -277,6 +302,18 @@ def main() -> None:
         model = TextFieldDistiller()
         model.model = model.model.load(args.output_dir)
         print(model.sample(args.prompt, max_chars=args.max_chars))
+    elif args.cmd == "chat":
+        manager = _manager(args.vault_dir)
+        model = NeuralFieldLanguageModel.load(args.model_dir)
+        session = SessionOverlay(manager, session_id=args.session_id)
+        session.add_turn("user", args.message)
+        retrieved = manager.retrieve(args.message, k=6)
+        context_summary = "\n".join(item.record.text for item in retrieved)
+        prompt = args.message if not context_summary else f"{context_summary}\nUser: {args.message}\nAssistant:"
+        response = model.generate(prompt, max_chars=180, deterministic=True)
+        response_text = response[len(prompt):].strip() or response.strip()
+        session.add_turn("assistant", response_text)
+        print({"response": response_text, "retrieved_context_summary": context_summary, "session_field": session.info.field_name, "generation_metrics": {"deterministic": True, "max_chars": 180}})
     elif args.cmd == "create-field":
         manager = _manager(args.vault_dir)
         lines = [line for line in Path(args.input_txt).read_text(encoding="utf-8").splitlines() if line.strip()]

@@ -181,3 +181,7 @@ No code fixes required.
 tag 0.9.x.
 
 Do not tag 1.0.0 yet. Run another hardening pass focused on experimental LM/DDiF boundaries and explicitly documented 1.0 stable-surface guarantees before promotion.
+
+
+## Neural-field LM status (required core)
+Virgo-2 targets a small but powerful neural-field language model. DDiF dataset-to-field distillation and the LM stack are **required core infrastructure** (beta maturity), not optional sidecars. Stable scope remains memory substrate, vault/registry/lifecycle, and deterministic reflection/folding. Experimental scope includes only GPT/LLaMA-level coherence claims, multimodal expansion, and large-scale training claims.
