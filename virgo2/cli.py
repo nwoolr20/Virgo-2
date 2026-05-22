@@ -101,7 +101,7 @@ def main() -> None:
     lm_train = sub.add_parser("lm-train")
     lm_train.add_argument("input_txt")
     lm_train.add_argument("model_dir")
-    lm_train.add_argument("--epochs", type=int, default=200)
+    lm_train.add_argument("--epochs", type=int, default=1, help="Closed-form trainer; must be 1 for compatibility.")
 
     lm_generate = sub.add_parser("lm-generate")
     lm_generate.add_argument("model_dir")
@@ -289,17 +289,47 @@ def main() -> None:
         metrics = evaluate_checkpoint(args.model_dir, text=text, sample_prompt=args.prompt)
         print(metrics)
         if args.report:
-            lines = ["# Virgo-2 LM Evaluation", ""]
+            lines = [
+                "# Virgo-2 LM Evaluation",
+                "",
+                "## Metrics",
+                "",
+                "| Metric | Value |",
+                "|---|---|",
+            ]
             for key, value in metrics.items():
-                lines.append(f"- **{key}**: {value}")
+                lines.append(f"| {key} | {value} |")
+            lines.extend(
+                [
+                    "",
+                    "## Sample Output",
+                    "",
+                    str(metrics.get("sample_output", "")),
+                    "",
+                    "## Checkpoint Validation Status",
+                    "",
+                    f"- success: {metrics.get('checkpoint_roundtrip_success')}",
+                    f"- message: {metrics.get('checkpoint_validation_message')}",
+                    "",
+                    "## Training Corpus Size",
+                    "",
+                    f"- characters: {len(text)}",
+                    "",
+                    "## Limitations",
+                    "",
+                    "- Current model is a deterministic closed-form character LM.",
+                    "- JSON metadata/codec format is retained as temporary compatibility exception.",
+                ]
+            )
             Path(args.report).write_text("\n".join(lines) + "\n", encoding="utf-8")
             print(f"report={args.report}")
     elif args.cmd == "ddif-reconstruct":
         text = Path(args.input_txt).read_text(encoding="utf-8")
         distiller = TextFieldDistiller(seed=0)
-        distiller.fit_text(text, epochs=200)
+        distiller.fit_text(text, epochs=1)
         distiller.save(args.output_dir)
-        print(f"Distilled text field to {args.output_dir}")
+        metrics = distiller.evaluate(text, sample_prompt=text[:1])
+        print({"output_dir": args.output_dir, "evaluation": metrics})
     elif args.cmd == "ddif-sample":
         model = TextFieldDistiller()
         model.model = model.model.load(args.output_dir)
@@ -308,20 +338,32 @@ def main() -> None:
         manager = _manager(args.vault_dir)
         model = NeuralFieldLanguageModel.load(args.model_dir)
         session = SessionOverlay(manager, session_id=args.session_id)
-        user_storage = session.add_turn("user", args.message)
+        session.add_turn("user", args.message)
         retrieved = manager.retrieve(args.message, k=6)
         context_summary = "\n".join(item.record.text for item in retrieved)
         prompt = args.message if not context_summary else f"{context_summary}\nUser: {args.message}\nAssistant:"
         response = model.generate(prompt, max_chars=args.max_chars, seed=args.seed, deterministic=False)
-        response_text = response[len(prompt):].strip() or response.strip()
-        assistant_storage = session.add_turn("assistant", response_text)
+        response_text = response[len(prompt) :].strip()
+        if not response_text:
+            response_text = "[warning] model generated empty continuation after prompt stripping"
+        session.add_turn("assistant", response_text)
+        writeback_context = session.retrieve_context(args.message, k=10)
+        writeback_success = args.message in writeback_context and response_text in writeback_context
         print(
             {
                 "response": response_text,
                 "retrieved_context_summary": context_summary,
                 "session_field": session.info.field_name,
-                "generation_metrics": {"deterministic": False, "max_chars": args.max_chars, "seed": args.seed},
-                "storage_result": {"user": str(user_storage), "assistant": str(assistant_storage)},
+                "generation_metrics": {
+                    "deterministic": False,
+                    "max_chars": args.max_chars,
+                    "seed": args.seed,
+                    "prompt_length": len(prompt),
+                    "response_length": len(response_text),
+                    "retrieved_context_count": len(retrieved),
+                    "session_id": session.info.session_id,
+                },
+                "storage_result": {"writeback_success": writeback_success},
             }
         )
     elif args.cmd == "create-field":
