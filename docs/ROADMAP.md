@@ -7,3 +7,7 @@
 5. Conversational shell
 6. Optional tiny decoder
 7. Evaluation suite
+
+8. Continuous field lifecycle and conversational memory
+9. Field consolidation (merge/fold)
+10. ForgeLite validation and reporting
