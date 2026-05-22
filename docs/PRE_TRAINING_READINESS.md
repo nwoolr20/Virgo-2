@@ -65,13 +65,22 @@ DDiF remains required core. `TextFieldDistiller` now has explicit input validati
 
 Chat remains retrieve → generate → writeback and keeps heavy maintenance deferred. It now emits generation metrics (`seed`, `max_chars`, `prompt_length`, `response_length`, `retrieved_context_count`, `session_id`) and provides explicit fallback text for empty continuation.
 
+## Closed-Form Training Clarification
+
+Virgo-2 currently trains its LM through a deterministic closed-form ridge-regression solve, not through iterative gradient updates.
+
+- `epochs` must be `1` because there is no multi-pass optimization loop in this training mode.
+- This is intentional and protects contract honesty: the CLI preserves `epochs` for compatibility while preventing misleading multi-epoch usage.
+- Unlike iterative LLM training, current fitting does not perform stepwise parameter updates across mini-batches or repeated passes.
+- Closed-form fitting is preferred right now for Virgo-2 experimentation because it is fast, deterministic, and easy to validate for checkpoint and evaluation integrity.
+
 ## Commands Run
 
 - python -m pip install -e ".[dev]"
 - ruff check .
 - python -m pytest
 - virgo2 --help
-- virgo2 lm-train <tmp>/corpus.txt <tmp>/model --epochs 5
+- virgo2 lm-train <tmp>/corpus.txt <tmp>/model --epochs 1
 - virgo2 lm-generate <tmp>/model "hello" --max-chars 40 --seed 1
 - virgo2 lm-evaluate <tmp>/model <tmp>/corpus.txt --report <tmp>/lm_eval.md
 - virgo2 ddif-reconstruct <tmp>/corpus.txt <tmp>/ddif_model

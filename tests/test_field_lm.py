@@ -32,3 +32,20 @@ def test_checkpoint_validation(tmp_path: Path) -> None:
     model.save(tmp_path)
     ok, msg = NeuralFieldLanguageModel.validate_checkpoint(tmp_path)
     assert ok, msg
+
+
+def test_epochs_contract_enforced() -> None:
+    model = NeuralFieldLanguageModel(seed=0)
+    model.fit_texts(["hello world"], epochs=1)
+
+    try:
+        model.fit_texts(["hello world"], epochs=2)
+    except ValueError as exc:
+        message = str(exc)
+    else:
+        raise AssertionError("Expected ValueError for epochs>1")
+
+    assert message == (
+        "epochs is no longer used for closed-form training; use epochs=1. "
+        "This model uses a deterministic closed-form ridge solve."
+    )

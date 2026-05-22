@@ -37,7 +37,7 @@ virgo2 fold ./tmp_vault conversation_core folded_conversation_0001 --max-records
 virgo2 forge-check ./tmp_vault --report ./tmp_vault/report.md
 
 printf "hello neural field\nhello virgo\n" > tiny_lm.txt
-virgo2 lm-train tiny_lm.txt ./tmp_char_lm --epochs 20
+virgo2 lm-train tiny_lm.txt ./tmp_char_lm --epochs 1
 virgo2 lm-generate ./tmp_char_lm "hello" --max-chars 40
 ```
 
