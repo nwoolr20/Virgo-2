@@ -23,3 +23,6 @@
 - Evaluate unified memory+LM coupling where field memories condition generation.
 - Compare deterministic fold vs learned compression under retrieval-quality budgets.
 - Document empirical findings with reproducible experiment cards.
+
+
+Updated for stable-release hardening pass (0.9.0 target).

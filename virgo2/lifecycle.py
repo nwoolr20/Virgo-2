@@ -151,12 +151,33 @@ class FieldLifecycleManager:
                 self.fields[info.name] = self.vault.load(info.name)
 
     def status(self) -> dict[str, object]:
+        infos = self.registry.list()
         return {
             "vault_path": str(self.vault.root),
-            "registered_fields": [f.name for f in self.registry.list()],
+            "registry_path": str(self.registry.path),
+            "registered_fields": [f.name for f in infos],
+            "field_count": len(infos),
             "loaded_fields": sorted(self.fields.keys()),
-            "record_counts": {f.name: f.record_count for f in self.registry.list()},
-            "dirty_fields": [f.name for f in self.registry.list() if f.dirty],
+            "record_counts": {f.name: f.record_count for f in infos},
+            "dirty_fields": [f.name for f in infos if f.dirty],
             "fit_pending": sorted(self.fit_pending),
             "maintenance_needed": sorted(self.maintenance_needed),
+        }
+
+    def release_check(self) -> dict[str, object]:
+        self.registry.load()
+        infos = self.registry.list()
+        dirty_fields = [f.name for f in infos if f.dirty]
+        oversized = [f.name for f in infos if f.record_count > 500]
+        lineage_invalid = [f.name for f in infos if f.kind == "folded" and not (f.parent_fields or f.folded_from)]
+        ready = not dirty_fields and not self.fit_pending and not self.maintenance_needed and not lineage_invalid
+        return {
+            "registry_loaded": True,
+            "field_count": len(infos),
+            "dirty_fields": dirty_fields,
+            "fit_pending": sorted(self.fit_pending),
+            "maintenance_needed": sorted(self.maintenance_needed),
+            "oversized_fields": oversized,
+            "fold_lineage_invalid": lineage_invalid,
+            "ready": ready,
         }

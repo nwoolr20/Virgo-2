@@ -60,6 +60,7 @@ class FieldRegistry:
         self.root = Path(root)
         self.path = self.root / "registry.tsv"
         self._fields: dict[str, FieldInfo] = {}
+        self.malformed_rows: list[str] = []
 
     def _now(self) -> str:
         return datetime.now(timezone.utc).isoformat()
@@ -186,6 +187,7 @@ class FieldRegistry:
 
     def load(self) -> None:
         self._fields = {}
+        self.malformed_rows = []
         if not self.path.exists():
             return
         with self.path.open("r", encoding="utf-8") as fh:
@@ -193,11 +195,40 @@ class FieldRegistry:
             for line in fh:
                 cols = [self._unescape(x) for x in line.rstrip("\n").split("\t")]
                 if len(cols) != len(header):
+                    self.malformed_rows.append(line.rstrip("\n"))
                     continue
                 data = dict(zip(header, cols, strict=False))
                 if header == LEGACY_HEADER:
                     data["registry_version"] = "1"
                 name = data.get("name", "")
                 if not name:
+                    self.malformed_rows.append(line.rstrip("\n"))
                     continue
                 self._fields[name] = self._from_data(data)
+
+    def validate(self) -> dict[str, object]:
+        duplicates: list[str] = []
+        missing_paths: list[str] = []
+        invalid_resolution_levels: list[str] = []
+        errors: list[str] = []
+        seen: set[str] = set()
+        for info in self.list():
+            if info.name in seen:
+                duplicates.append(info.name)
+            seen.add(info.name)
+            if not Path(info.path).exists():
+                missing_paths.append(info.name)
+            normalized = normalize_resolution_level(info.resolution_level)
+            if normalized != info.resolution_level:
+                invalid_resolution_levels.append(info.name)
+        if self.malformed_rows:
+            errors.append(f"malformed_rows={len(self.malformed_rows)}")
+        return {
+            "registry_version": REGISTRY_VERSION,
+            "field_count": len(self._fields),
+            "malformed_rows": list(self.malformed_rows),
+            "duplicate_names": duplicates,
+            "missing_paths": missing_paths,
+            "invalid_resolution_levels": invalid_resolution_levels,
+            "errors": errors,
+        }
