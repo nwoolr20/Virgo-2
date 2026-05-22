@@ -10,5 +10,6 @@ def test_lifecycle(tmp_path):
     m.ingest("my name is Nicholas")
     out = m.retrieve("Nicholas")
     assert out
-    m2 = FieldLifecycleManager(FieldVault(tmp_path), FieldRegistry(tmp_path))
-    assert m2.retrieve("Nicholas")
+    assert m.fit_pending
+    m.maintenance_cycle(auto_fold=False)
+    assert not m.fit_pending

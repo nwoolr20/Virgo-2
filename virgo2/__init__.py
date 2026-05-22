@@ -1,31 +1,53 @@
 """Virgo-2 memory substrate plus experimental DDiF-inspired neural-field LM."""
 
+from .conflict import Conflict, ConflictPolicy, FieldConflictResolver
+from .consolidation import FieldConsolidator
 from .conversation import ConversationMemory, ConversationTurn
 from .coordinates import CoordinateEncoder
-from .consolidation import FieldConsolidator
+from .curriculum import CurriculumItem, CurriculumQueue
 from .field import NeuralField
-from .lifecycle import FieldLifecycleManager
+from .field_builder import FieldBuildRequest, FieldBuildResult, FieldBuilder
+from .field_types import FieldType, ResolutionLevel, normalize_field_type, normalize_resolution_level
 from .forge import ForgeLite
+from .lifecycle import FieldLifecycleManager
 from .memory import MemoryRecord, NeuralMemory
+from .reflection import ReflectionEngine, ReflectionReport
 from .registry import FieldInfo, FieldRegistry
 from .retrieval import MultiFieldRetriever, RetrievedMemory
+from .session import SessionInfo, SessionOverlay
 from .taxonomy import SemanticTaxonomy
 from .vault import FieldVault
 
 __all__ = [
-    "CoordinateEncoder",
-    "NeuralField",
-    "MemoryRecord",
-    "NeuralMemory",
+    "Conflict",
+    "ConflictPolicy",
+    "FieldConflictResolver",
+    "FieldConsolidator",
     "ConversationMemory",
     "ConversationTurn",
+    "CoordinateEncoder",
+    "CurriculumItem",
+    "CurriculumQueue",
+    "NeuralField",
+    "FieldBuildRequest",
+    "FieldBuildResult",
+    "FieldBuilder",
+    "FieldType",
+    "ResolutionLevel",
+    "normalize_field_type",
+    "normalize_resolution_level",
+    "ForgeLite",
     "FieldLifecycleManager",
+    "MemoryRecord",
+    "NeuralMemory",
+    "ReflectionEngine",
+    "ReflectionReport",
     "FieldInfo",
     "FieldRegistry",
-    "RetrievedMemory",
     "MultiFieldRetriever",
-    "FieldVault",
-    "FieldConsolidator",
+    "RetrievedMemory",
+    "SessionInfo",
+    "SessionOverlay",
     "SemanticTaxonomy",
-    "ForgeLite",
+    "FieldVault",
 ]
