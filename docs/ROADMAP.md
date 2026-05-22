@@ -1,13 +1,25 @@
 # Virgo-2 Roadmap
 
-1. Core memory engine
-2. Field merge and decay
-3. Browser runtime loader
-4. WebGPU/WebNN acceleration
-5. Conversational shell
-6. Optional tiny decoder
-7. Evaluation suite
+## Near-term (stabilization)
 
-8. Continuous field lifecycle and conversational memory
-9. Field consolidation (merge/fold)
-10. ForgeLite validation and reporting
+- Expand lifecycle and conversation regression tests for edge cases (dirty-state, missing artifacts, fold/merge interactions).
+- Add richer ForgeLite checks and actionable repair hints.
+- Improve retrieval scoring diagnostics and traceability.
+
+## Mid-term (memory quality)
+
+- Add configurable consolidation policies (thresholds, scheduled folds, retention windows).
+- Improve salience dynamics (decay + reinforcement balancing).
+- Introduce optional learned compression prototype for folded fields.
+
+## Mid-term (LM experimentation)
+
+- Improve DDiF-inspired text distillation losses and sampling controls.
+- Add reproducible training/eval scripts for tiny corpora.
+- Expand context-window and conditioning experiments.
+
+## Long-term (research direction)
+
+- Evaluate unified memory+LM coupling where field memories condition generation.
+- Compare deterministic fold vs learned compression under retrieval-quality budgets.
+- Document empirical findings with reproducible experiment cards.
