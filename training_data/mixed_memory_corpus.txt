@@ -1,0 +1,6 @@
+User: Explain how field folding works.
+Assistant: Folding compresses low-salience memory clusters into deterministic summary records.
+User: Why preserve lineage?
+Assistant: Lineage allows reflective systems to trace semantic ancestry and validate provenance.
+User: Can the neural field evolve continuously?
+Assistant: Yes, incremental updates allow localized adaptation without catastrophic forgetting.
