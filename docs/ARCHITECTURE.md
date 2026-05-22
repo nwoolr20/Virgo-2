@@ -1,32 +1,60 @@
 # Virgo-2 Architecture
 
-Virgo-2 maps text into deterministic coordinates, stores records with salience, and fits a continuous neural field that supports resonance-aware retrieval.
+Virgo-2 is a three-layer research architecture centered on neural-field memory.
 
-## Coordinate Encoder
-`CoordinateEncoder` tokenizes text, hashes tokens with `blake2b`, projects through sinusoidal features, and normalizes output vectors.
+## Layer 1: Core neural-field memory substrate
 
-## Continuous Field
-`NeuralField` builds Fourier-style features from coordinates and fits ridge regression weights for compact continuous approximation.
+Primary modules:
 
-## Memory Records and Salience
-`NeuralMemory` stores `MemoryRecord{text, metadata, salience}`. Salience biases retrieval and decays over time.
+- `virgo2/coordinates.py` (`CoordinateEncoder`)
+- `virgo2/field.py` (`NeuralField`)
+- `virgo2/memory.py` (`MemoryRecord`, `NeuralMemory`)
+- `virgo2/storage.py` (save/load to `field.npz` + `records.tsv`)
 
-## Retrieval Scoring
-Retrieval combines cosine distance to stored coordinates with field resonance mismatch and salience boost into a single lower-is-better score.
+Responsibilities:
 
-## Persistence Format
-Stores are directory-based:
-- `field.npz`: encoder config, coordinates, field basis, and learned weights.
-- `records.tsv`: text, salience, and metadata json per record.
+- Convert text to stable coordinates.
+- Fit a continuous field representation over memory records.
+- Retrieve records by coordinate similarity + salience.
+- Persist memory to local artifacts.
 
-## Browser Export
-Browser export writes `field.npz`, `records.tsv`, `manifest.txt`, and a mini README for future JS/WebGPU loaders.
+## Layer 2: Lifecycle + conversational memory
 
-## Merge Behavior
-`merge_memories` concatenates records from compatible memories and refits one merged field.
+Primary modules:
 
-## Future Decoder Layer
-A tiny optional decoder may be added later as an experimental module over this substrate.
+- `registry.py`, `vault.py`, `lifecycle.py`
+- `taxonomy.py`, `retrieval.py`, `salience.py`
+- `conversation.py`, `consolidation.py`, `forge.py`
 
-## Continuous Lifecycle Layer
-Virgo-2 now includes vault-managed fields, TSV registry, conversational memory routing, deterministic folding/merging, and ForgeLite validation.
+Responsibilities:
+
+- Route text into semantic fields.
+- Load/create/save fields with metadata tracking.
+- Retrieve across fields and reinforce useful memories.
+- Build compact context packs for conversational use.
+- Merge/fold bloated fields.
+- Validate system health using ForgeLite checks.
+
+## Layer 3: Experimental DDiF-inspired LM
+
+Primary modules:
+
+- `virgo2/ddif/`
+- `virgo2/lm/`
+- `virgo2/training/`
+
+Responsibilities:
+
+- Distill text statistics into compact field-like representations.
+- Train a tiny character-level neural-field LM.
+- Generate short text from prompts for research experiments.
+
+## End-to-end flow
+
+User text -> `ConversationMemory.add_turn()` -> `FieldLifecycleManager.ingest()` -> `SemanticTaxonomy` routing -> `FieldVault` load/create -> `NeuralMemory` update -> `FieldRegistry` dirty/count update -> fit/refit -> vault save -> cross-field retrieval/reinforcement -> `ConversationMemory.context_for()` -> optional fold/merge -> `ForgeLite` validation.
+
+## Design constraints
+
+- Keep implementation local-first and lightweight.
+- Avoid platform sprawl (no mandatory cloud APIs, orchestration systems, or heavyweight dependencies).
+- Maintain honest research framing: functional but non-production and non-GPT-class.
