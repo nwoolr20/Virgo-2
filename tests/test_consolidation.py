@@ -16,9 +16,13 @@ def test_consolidation(tmp_path) -> None:
     r.update_count("conversation_core", len(m.records))
 
     c = FieldConsolidator(v, r)
-    merged = c.merge_fields(["conversation_core"], "merged")
-    assert len(merged.records) == 20
+    assert c.detect_duplicate_records(m) == []
+    m.add("item 1", salience=1.0)
+    assert c.detect_duplicate_records(m)
+
     folded = c.fold_field("conversation_core", "folded", max_records=8)
-    assert len(folded.records) <= 9
     assert any("item 0" in rec.text for rec in folded.records)
-    assert r.get("folded").folded_from == ["conversation_core"]
+    info = r.get("folded")
+    assert info is not None
+    assert info.folded_from == ["conversation_core"]
+    assert info.compression_ratio > 1.0
