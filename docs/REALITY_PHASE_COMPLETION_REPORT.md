@@ -14,7 +14,7 @@ tag 1.0.0 memory substrate + beta LM
 - `ruff check .`
 - `python -m pytest`
 - `virgo2 --help`
-- `virgo2 lm-train <tmp>/corpus.txt <tmp>/model --epochs 5`
+- `virgo2 lm-train <tmp>/corpus.txt <tmp>/model --epochs 1`
 - `virgo2 lm-generate <tmp>/model "hello" --max-chars 40`
 - `virgo2 lm-evaluate <tmp>/model <tmp>/corpus.txt --report <tmp>/lm_eval.md`
 - `virgo2 ddif-reconstruct <tmp>/corpus.txt <tmp>/ddif_model`

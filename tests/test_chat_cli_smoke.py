@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from virgo2.cli import main
 from virgo2.ddif.distiller import TextFieldDistiller
 

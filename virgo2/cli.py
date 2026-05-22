@@ -101,7 +101,7 @@ def main() -> None:
     lm_train = sub.add_parser("lm-train")
     lm_train.add_argument("input_txt")
     lm_train.add_argument("model_dir")
-    lm_train.add_argument("--epochs", type=int, default=1, help="Closed-form trainer; must be 1 for compatibility.")
+    lm_train.add_argument("--epochs", type=int, default=1, help="Deterministic closed-form ridge training; compatibility flag that must be 1.")
 
     lm_generate = sub.add_parser("lm-generate")
     lm_generate.add_argument("model_dir")
@@ -119,6 +119,7 @@ def main() -> None:
     ddif_reconstruct = sub.add_parser("ddif-reconstruct")
     ddif_reconstruct.add_argument("input_txt")
     ddif_reconstruct.add_argument("output_dir")
+    ddif_reconstruct.description = "Deterministic closed-form distillation into a compact field checkpoint."
 
     ddif_sample = sub.add_parser("ddif-sample")
     ddif_sample.add_argument("output_dir")

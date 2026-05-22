@@ -22,10 +22,21 @@ Current implementation is intentionally minimal:
 
 CLI commands:
 
-- `virgo2 lm-train <input_txt> <model_dir> --epochs N`
+- `virgo2 lm-train <input_txt> <model_dir> --epochs 1`
 - `virgo2 lm-generate <model_dir> <prompt> --max-chars N`
 
 The tiny LM is intended for fast local iteration and architecture probing.
+
+## Closed-form training contract
+
+The current Virgo-2 LM training path is intentionally deterministic and non-iterative:
+
+- closed-form ridge-regression solve,
+- deterministic fitting behavior for identical inputs,
+- no gradient-descent epoch loop in the current implementation.
+
+`--epochs` is retained only as a compatibility flag and must currently be `1`.
+Values greater than `1` are rejected to avoid implying iterative transformer-style optimization that does not exist yet.
 
 ## Generation loop
 

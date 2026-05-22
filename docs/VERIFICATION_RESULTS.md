@@ -34,7 +34,7 @@ PASSED WITH LIMITATIONS. All required automated checks, module import checks, an
 - `virgo2 session-fold ./tmp_vault test_session`
 - `virgo2 maintenance-cycle ./tmp_vault --max-records 5`
 - `virgo2 forge-check ./tmp_vault --report ./tmp_vault/report.md`
-- `virgo2 lm-train field.txt ./tmp_char_lm --epochs 20`
+- `virgo2 lm-train field.txt ./tmp_char_lm --epochs 1`
 - `virgo2 lm-generate ./tmp_char_lm "Virgo" --max-chars 80`
 - `virgo2 ddif-reconstruct field.txt ./tmp_ddif_field`
 - `virgo2 ddif-sample ./tmp_ddif_field --prompt "Virgo" --max-chars 80`
@@ -65,7 +65,7 @@ PASSED WITH LIMITATIONS. All required automated checks, module import checks, an
 - `virgo2 session-fold ./tmp_vault test_session` — **PASS** — folded session field created.
 - `virgo2 maintenance-cycle ./tmp_vault --max-records 5` — **PASS** — reflection/folding actions completed without crash.
 - `virgo2 forge-check ./tmp_vault --report ./tmp_vault/report.md` — **PASS** — ForgeLite report written.
-- `virgo2 lm-train field.txt ./tmp_char_lm --epochs 20` — **PASS** — model persisted.
+- `virgo2 lm-train field.txt ./tmp_char_lm --epochs 1` — **PASS** — model persisted.
 - `virgo2 lm-generate ./tmp_char_lm "Virgo" --max-chars 80` — **PASS** — generation completed.
 - `virgo2 ddif-reconstruct field.txt ./tmp_ddif_field` — **PASS** — distilled field written.
 - `virgo2 ddif-sample ./tmp_ddif_field --prompt "Virgo" --max-chars 80` — **PASS** — sampling completed.
