@@ -1,0 +1,6 @@
+Step 1: initialize the vault.
+Step 2: ingest baseline records.
+Step 3: run deterministic maintenance.
+Step 4: verify retrieval integrity.
+Step 5: save folded lineage metadata.
+Procedural reasoning should remain stable and reproducible.
