@@ -1,0 +1,4 @@
+Neural fields represent information as continuous mathematical functions over coordinates.
+Retrieval reinforcement increases salience for frequently accessed memories.
+Deterministic folding preserves high-salience records while compressing low-salience clusters.
+Reflection loops should never compromise state consistency.
