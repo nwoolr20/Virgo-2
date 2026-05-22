@@ -130,6 +130,8 @@ def main() -> None:
     chat.add_argument("model_dir")
     chat.add_argument("message")
     chat.add_argument("--session-id", default=None)
+    chat.add_argument("--max-chars", type=int, default=180)
+    chat.add_argument("--seed", type=int, default=0)
 
     # New automation commands
     create_field = sub.add_parser("create-field")
@@ -306,14 +308,22 @@ def main() -> None:
         manager = _manager(args.vault_dir)
         model = NeuralFieldLanguageModel.load(args.model_dir)
         session = SessionOverlay(manager, session_id=args.session_id)
-        session.add_turn("user", args.message)
+        user_storage = session.add_turn("user", args.message)
         retrieved = manager.retrieve(args.message, k=6)
         context_summary = "\n".join(item.record.text for item in retrieved)
         prompt = args.message if not context_summary else f"{context_summary}\nUser: {args.message}\nAssistant:"
-        response = model.generate(prompt, max_chars=180, deterministic=True)
+        response = model.generate(prompt, max_chars=args.max_chars, seed=args.seed, deterministic=False)
         response_text = response[len(prompt):].strip() or response.strip()
-        session.add_turn("assistant", response_text)
-        print({"response": response_text, "retrieved_context_summary": context_summary, "session_field": session.info.field_name, "generation_metrics": {"deterministic": True, "max_chars": 180}})
+        assistant_storage = session.add_turn("assistant", response_text)
+        print(
+            {
+                "response": response_text,
+                "retrieved_context_summary": context_summary,
+                "session_field": session.info.field_name,
+                "generation_metrics": {"deterministic": False, "max_chars": args.max_chars, "seed": args.seed},
+                "storage_result": {"user": str(user_storage), "assistant": str(assistant_storage)},
+            }
+        )
     elif args.cmd == "create-field":
         manager = _manager(args.vault_dir)
         lines = [line for line in Path(args.input_txt).read_text(encoding="utf-8").splitlines() if line.strip()]
