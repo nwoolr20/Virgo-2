@@ -27,3 +27,6 @@ Browser export writes `field.npz`, `records.tsv`, `manifest.txt`, and a mini REA
 
 ## Future Decoder Layer
 A tiny optional decoder may be added later as an experimental module over this substrate.
+
+## Continuous Lifecycle Layer
+Virgo-2 now includes vault-managed fields, TSV registry, conversational memory routing, deterministic folding/merging, and ForgeLite validation.
