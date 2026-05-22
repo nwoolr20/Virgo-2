@@ -1,53 +1,47 @@
 # Virgo-2
 
-Virgo-2 is a lightweight, CPU-first, browser-forward neural-field memory engine.
+Virgo-2 is a lightweight, CPU-first neural-field system with two layers:
+- a **stable memory substrate** for retrieval and storage
+- an **experimental DDiF-inspired neural-field language model (LM)**
 
 ## What it is
 - Deterministic text -> coordinates encoder.
 - Continuous neural field over coordinates.
 - Salience-aware memory retrieval.
-- Compact portable storage and browser bundle export.
+- Experimental coordinate-based character LM for reconstruction/generation.
 
 ## What it is not
-- Not a full trained LLM.
+- Not competitive with transformer LLMs.
 - Not a transformer replacement today.
-- Not dependent on Torch, Hugging Face, FAISS, or sentence-transformers for base usage.
+- Not dependent on Torch/Hugging Face for base usage.
 
-## Why neural-field memory
-Virgo-2 explores whether language memory can be represented as a continuous coordinate-addressable field rather than static embedding tables, JSON prompt stuffing, or external vector DB infrastructure.
+## DDiF-inspired language adaptation
+DDiF stores dataset information in neural fields via coordinate-to-quantity mappings. Virgo-2 adapts this idea to language:
+- coordinates represent sequence position/context
+- quantities represent character IDs/distributions (and later latent vectors)
+
+This repository now separates:
+1. `virgo2` core memory substrate
+2. `virgo2.ddif` language distillation layer
+3. `virgo2.lm` neural-field language model layer
+4. `virgo2.training` CPU-safe training utilities
+5. `virgo2.browser_export` browser runtime preparation
 
 ## Install
 ```bash
 python -m pip install -e ".[dev]"
+# optional training extras
+python -m pip install -e ".[dev,train]"
 ```
 
 ## CLI quickstart
 ```bash
 virgo2 ingest sample.txt ./tmp_memory
 virgo2 query ./tmp_memory "continuous memory field" --k 5
-virgo2 inspect ./tmp_memory
-virgo2 export-browser ./tmp_memory ./tmp_browser_bundle
+virgo2 lm-train examples/tiny_corpus.txt ./tmp_char_lm --epochs 50
+virgo2 lm-generate ./tmp_char_lm "hello" --max-chars 50
+virgo2 ddif-reconstruct examples/tiny_corpus.txt ./tmp_ddif
+virgo2 ddif-sample ./tmp_ddif --prompt "hello"
 ```
 
-## Python usage
-```python
-from virgo2.memory import NeuralMemory
-
-mem = NeuralMemory()
-mem.add("Neural fields store memory as continuous functions.")
-mem.add("Browser deployment should stay lightweight.")
-mem.fit()
-print(mem.retrieve("continuous memory field", k=2))
-```
-
-## Architecture overview
-1. Text is encoded into deterministic normalized coordinates.
-2. Records are stored with metadata and salience.
-3. A Fourier-style NumPy neural field is fit with ridge regression.
-4. Retrieval combines cosine distance, field resonance, and salience.
-5. Stores can be merged and exported for future browser runtimes.
-
-See `docs/ARCHITECTURE.md` for full format and data-flow details.
-
-## Roadmap
-See `docs/ROADMAP.md` for phased milestones from core memory engine to optional decoder and evaluation suite.
+See `docs/DDIF_LANGUAGE_ADAPTATION.md` and `docs/NEURAL_FIELD_LM.md` for details.

@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 
 from .browser_export import export_browser_bundle
+from .ddif import TextFieldDistiller
 from .memory import NeuralMemory
 from .merge import merge_memories
 from .storage import load_memory, save_memory
@@ -48,6 +49,25 @@ def main() -> None:
     inspect = sub.add_parser("inspect")
     inspect.add_argument("store_dir")
 
+    lm_train = sub.add_parser("lm-train")
+    lm_train.add_argument("input_txt")
+    lm_train.add_argument("model_dir")
+    lm_train.add_argument("--epochs", type=int, default=200)
+
+    lm_generate = sub.add_parser("lm-generate")
+    lm_generate.add_argument("model_dir")
+    lm_generate.add_argument("prompt")
+    lm_generate.add_argument("--max-chars", type=int, default=200)
+
+    ddif_reconstruct = sub.add_parser("ddif-reconstruct")
+    ddif_reconstruct.add_argument("input_txt")
+    ddif_reconstruct.add_argument("output_dir")
+
+    ddif_sample = sub.add_parser("ddif-sample")
+    ddif_sample.add_argument("output_dir")
+    ddif_sample.add_argument("--prompt", default="hello")
+    ddif_sample.add_argument("--max-chars", type=int, default=120)
+
     args = parser.parse_args()
 
     if args.cmd == "ingest":
@@ -88,6 +108,26 @@ def main() -> None:
         print(f"records={len(memory.records)}")
         print(f"field_fitted={memory.field.weights is not None}")
         print(f"dimensions={memory.encoder.dimensions}")
+    elif args.cmd == "lm-train":
+        text = Path(args.input_txt).read_text(encoding="utf-8")
+        distiller = TextFieldDistiller(seed=0)
+        distiller.fit_text(text, epochs=args.epochs)
+        distiller.save(args.model_dir)
+        print(f"Saved neural-field LM to {args.model_dir}")
+    elif args.cmd == "lm-generate":
+        model = TextFieldDistiller()
+        model.model = model.model.load(args.model_dir)
+        print(model.sample(args.prompt, max_chars=args.max_chars))
+    elif args.cmd == "ddif-reconstruct":
+        text = Path(args.input_txt).read_text(encoding="utf-8")
+        distiller = TextFieldDistiller(seed=0)
+        distiller.fit_text(text, epochs=200)
+        distiller.save(args.output_dir)
+        print(f"Distilled text field to {args.output_dir}")
+    elif args.cmd == "ddif-sample":
+        model = TextFieldDistiller()
+        model.model = model.model.load(args.output_dir)
+        print(model.sample(args.prompt, max_chars=args.max_chars))
 
 
 if __name__ == "__main__":
