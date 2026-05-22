@@ -1,0 +1,4 @@
+Virgo-2 combines neural-field memory with deterministic lifecycle orchestration.
+DDiF distills datasets into compact neural-field representations.
+Reflection systems maintain semantic coherence and lineage integrity.
+The registry tracks compression ratios, resolution levels, and parent fields.
