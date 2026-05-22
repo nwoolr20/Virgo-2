@@ -44,12 +44,22 @@ class NeuralFieldLanguageModel:
         c = np.array([[float(pos) / max(pos, 1)]], dtype=np.float32)
         return self._features(c) @ self.weights
 
-    def generate(self, prompt: str, max_chars: int = 200, temperature: float = 0.8) -> str:
+    def generate(self, prompt: str, max_chars: int = 200, temperature: float = 0.8, seed: int | None = None, deterministic: bool = False) -> str:
+        if max_chars < 0:
+            raise ValueError("max_chars must be non-negative")
+        if self.weights is None:
+            raise RuntimeError("Model is not trained")
+        if prompt is None:
+            raise ValueError("prompt must not be None")
         out = prompt
-        rng = np.random.default_rng(self.seed)
+        rng_seed = self.seed if seed is None else seed
+        rng = np.random.default_rng(rng_seed)
         for _ in range(max_chars):
             logits = self.predict_next(out).reshape(-1)
-            next_id = sample_from_logits(logits, temperature=temperature, rng=rng)
+            if deterministic:
+                next_id = int(np.argmax(logits))
+            else:
+                next_id = sample_from_logits(logits, temperature=temperature, rng=rng)
             out += self.codec.decode([next_id])
         return out
 
