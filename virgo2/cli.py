@@ -171,6 +171,19 @@ def main() -> None:
     curriculum_next.add_argument("vault_dir")
     curriculum_next.add_argument("--batch-size", type=int, default=10)
 
+    status_cmd = sub.add_parser("status")
+    status_cmd.add_argument("vault_dir")
+
+    release_check = sub.add_parser("release-check")
+    release_check.add_argument("vault_dir")
+    release_check.add_argument("--report", default=None)
+
+    registry_validate = sub.add_parser("registry-validate")
+    registry_validate.add_argument("vault_dir")
+
+    taxonomy_classify = sub.add_parser("taxonomy-classify")
+    taxonomy_classify.add_argument("text")
+
     args = parser.parse_args()
 
     if args.cmd == "vault-init":
@@ -302,6 +315,25 @@ def main() -> None:
         queue = CurriculumQueue(Path(args.vault_dir) / "curriculum.tsv")
         queue.load()
         print(queue.next_batch(batch_size=args.batch_size))
+    elif args.cmd == "status":
+        manager = _manager(args.vault_dir)
+        print(manager.status())
+    elif args.cmd == "release-check":
+        manager = _manager(args.vault_dir)
+        forge = ForgeLite(manager.vault, manager.registry)
+        result = forge.release_check()
+        print(result)
+        if args.report:
+            Path(args.report).write_text("# Virgo-2 Release Check\n\n" + str(result), encoding="utf-8")
+            print(f"report={args.report}")
+    elif args.cmd == "registry-validate":
+        manager = _manager(args.vault_dir)
+        print(manager.registry.validate())
+    elif args.cmd == "taxonomy-classify":
+        from dataclasses import asdict
+        from .taxonomy import SemanticTaxonomy
+
+        print(asdict(SemanticTaxonomy().classify(args.text)))
 
 
 if __name__ == "__main__":

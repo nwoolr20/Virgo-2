@@ -99,3 +99,35 @@ class ForgeLite:
         for key, value in checks.items():
             lines.append(f"- {key}: {value}")
         p.write_text("\n".join(lines), encoding="utf-8")
+
+
+    def release_check(self) -> dict[str, object]:
+        checks = self.run_checks()
+        blocking: list[str] = []
+        warnings: list[str] = []
+        if checks["errors"]:
+            blocking.append("registry cannot load")
+        if checks["missing_registered_paths"]:
+            blocking.append("missing field artifacts")
+        if not checks["lineage"]["lineage_valid"]:
+            blocking.append("invalid folded lineage")
+        if any(not ok for ok in checks["roundtrip"]["roundtrip"].values()):
+            blocking.append("failed roundtrip")
+
+        for field in checks["empty_fields"]:
+            warnings.append(f"empty field: {field}")
+        for field in checks["dirty_fields"]:
+            warnings.append(f"dirty field: {field}")
+        for field in checks["oversized_fields"]:
+            warnings.append(f"oversized field: {field}")
+        if checks["latency"]["total_latency_ms"] > 1000:
+            warnings.append("high latency")
+        if checks["recommended_maintenance_actions"] != ["none"]:
+            warnings.append("maintenance recommended")
+
+        return {
+            "ready": not blocking,
+            "blocking_issues": blocking,
+            "warnings": warnings,
+            "checks": checks,
+        }
