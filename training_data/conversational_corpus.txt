@@ -1,0 +1,6 @@
+User: Hello Virgo, remember that our conversations should preserve context.
+Assistant: I will store important turns in neural-field memory and retrieve relevant context later.
+User: When I ask about a previous idea, use recall before answering.
+Assistant: Retrieval should guide generation so the response reflects remembered information.
+User: Keep the tone clear, direct, and useful.
+Assistant: Conversation memory supports continuity without requiring the whole transcript every time.
