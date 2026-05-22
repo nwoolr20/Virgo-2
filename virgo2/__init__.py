@@ -1,4 +1,4 @@
-"""Virgo-2 lightweight neural-field memory engine."""
+"""Virgo-2 memory substrate plus experimental DDiF-inspired neural-field LM."""
 
 from .coordinates import CoordinateEncoder
 from .field import NeuralField
